@@ -1,5 +1,5 @@
 Bootstrap: library
-From: ubuntu:22.04
+From: ubuntu:20.04
 
 ### references
 # https://github.com/NIH-HPC/singularity-def-files
@@ -10,9 +10,14 @@ From: ubuntu:22.04
 
 # things that run during image build
 %post
+    # variables required for build
+
+    # things to build
+
     apt -y update
     apt -y upgrade
-    apt install git 
+    apt install -y git 
+    #apt install ncbi-blast+
 
 
 # things that are defined for runtime
