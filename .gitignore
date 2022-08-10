@@ -1,3 +1,4 @@
 #cscluster
 temp/
 *.sif
+db/
