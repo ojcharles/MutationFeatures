@@ -10,7 +10,7 @@ v_eval = 1e-7
 
 # passed arguments
 # //todo make a rgument
-blast_db_name = "all_psiblast_hits.fasta"
+blast_db_name = "uniref50_virus.fasta"
 
 library(stringr)
 library(Peptides)
@@ -99,14 +99,15 @@ for(r in 1:nrow(df)){
   pos = df$loc[r]
   wtAA = df$wt[r]
   mtAA = df$mt[r]
-  sus2 = pssm[r,]
+  sus2 = pssm[pos,]
   wtcol = grep(wtAA, cols)
   mtcol = grep(mtAA, cols)
-  df$pssm_wt[r] = pssm[r,wtcol]
-  df$pssm_mt[r] = pssm[r,mtcol]
+  df$pssm_wt[r] = pssm[pos,wtcol]
+  df$pssm_mt[r] = pssm[pos,mtcol]
   df$pssm_diff[r] = abs(as.numeric(df$pssm_mt[r]) - as.numeric(df$pssm_wt[r]))
-  df$pssm_mean[r] = mean(as.numeric(pssm[r,]))
+  df$pssm_mean[r] = mean(as.numeric(pssm[pos,]))
 }
+
 
 # -------------------- sequence conservation
 # # https://compbio.cs.princeton.edu/conservation/
@@ -114,9 +115,9 @@ command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mf
 system(command)
 conservation = data.frame(read.table(paste0(tdir,"/conservation.txt"),header = F, sep = "\t")[,1:2])
 colnames(conservation) = c("loc", "jsdiv")
+conservation$jsdiv = as.numeric(conservation$jsdiv)
+conservation[conservation$jsdiv < 0,2] = 0 # handle NA
 df = merge(df, conservation, by = "loc", all.x = T)
-if(any(is.na(df$jsdiv)) == TRUE){df[is.na(df$jsdiv),]$jsdiv = 0} # if any are na replace
-
 
 
 ### psi-blast conservation score
