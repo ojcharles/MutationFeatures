@@ -5,9 +5,8 @@ mkdir /tools
 cd /tools
 
 ##### dssp
-git clone https://github.com/ojcharles/libcifpp.git
+git clone https://github.com/PDB-REDO/libcifpp
 cd libcifpp
-git checkout ojcharles-patch-1
 mkdir build
 cd build
 cmake .. 
