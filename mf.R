@@ -215,7 +215,28 @@ df$change_charge = abs(df$to_charge - df$from_charge)
 
 
 # ------------------------------------------------------------ Structural features
-# #--------------------  DSSP
+struc = list()
+# --------------------  from sequence
+### disorder
+command = paste0("/app/Seq2Disorder.sh -i=", infasta,
+  " -o=/tmp/seq2disorder.csv")
+system(command)
+struc$seq2disorder = read.csv("/tmp/seq2disorder.csv")
+colnames(struc$seq2disorder) = c("struc_seq2disorder")
+struc$seq2disorder$loc = 1:nrow(struc$seq2disorder)
+df = merge(df, struc$seq2disorder, by = "loc", all.x = T)
+
+### secondary structure
+command = paste0("/app/Seq2SecStruc.sh -i=", infasta,
+  " -o=/tmp/seq2ss.csv")
+system(command)
+struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
+colnames(struc$seq2SecStruc) = c("loc", "struc_seq2ss_ss",
+"struc_seq2ss_C", "struc_seq2ss_E", "struc_seq2ss_H")
+df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
+
+# --------------------  from structure
+### DSSP
 if(use_pdb){
   
   parse.dssp <- function(file){

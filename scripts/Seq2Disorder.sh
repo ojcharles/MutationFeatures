@@ -38,8 +38,8 @@ done
 
 echo "--------------------------------------------------------------------"
 echo "usage examples:"
-echo " ./ disorder.sh -s   # this installs all dependencies"
-echo " ./ disorder.sh -i=my.fasta -o=disorder_pred.csv   # this runs stuff"
+echo " Seq2Disorder.sh -s   # this installs all dependencies"
+echo " Seq2Disorder.sh -i=my.fasta -o=disorder_pred.csv   # this runs stuff"
 echo "--------------------------------------------------------------------"
 #echo "should setup:  $setup"
 #echo "file to process: $input"
