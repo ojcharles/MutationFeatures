@@ -32,6 +32,11 @@ case $i in
 esac
 done
 
+echo "--------------------------------------------------------------------"
+echo "usage examples:"
+echo " Seq2SecStruc.sh -s   # this installs all dependencies"
+echo " Seq2SecStruc.sh -i=my.fasta -o=SecStruc_pred.csv   # this runs stuff"
+echo "--------------------------------------------------------------------"
 echo "should setup:  $setup"
 echo "file to process: $input"
 echo "file to return: $output"

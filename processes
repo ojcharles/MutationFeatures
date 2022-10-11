@@ -1,0 +1,28 @@
+type    tool-process    installed   incorporated
+evol    pssm-uniref50   Y   Y
+evol    JensSha dvgc    Y   Y
+evol    msa_depth_psi   Y   Y
+evol    wt_mt_grantham  Y   Y
+evol    wt_mt_blosum62  Y   Y
+phys    vdwradius_delta Y   y
+phys    hydromoment     Y   y
+phys    hydrophobicity   y   Y
+phys    PI  Y   Y
+phys    molweight   y   y
+phys    charge  Y   Y
+struc   dssp_ss    y   Y
+struc   dssp_asa    y   Y
+struc   dssp_phi    y   Y
+struc   dssp_psi    y   Y
+struc   dssp_rsa    y   Y
+struc   seq2disorder    Y   y
+struc   seq2secstruc    Y   y
+drug?
+
+
+# todo
+https://github.com/KIT-MBS/pydca
+https://github.com/djparente/coevol-utils
+https://github.com/realbigws/PDB_Tool
+https://github.com/AntoinePassemiers/Wynona
+https://github.com/biopython/biopython/blob/master/Bio/PDB/ResidueDepth.py
