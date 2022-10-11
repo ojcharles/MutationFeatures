@@ -6,8 +6,8 @@
 
 
 
-# Run R script
-Rscript /tmp/.R 2>&1 >/dev/null
+# Run R script silently
+Rscript /app/mf.R 2>&1 >/dev/null
 
 # cat the resultant file
 cat /tmp/df.csv

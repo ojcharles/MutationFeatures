@@ -1,17 +1,17 @@
 #!/bin/bash
 # oscar charles 2022
-# Disorder prediction from fasta file
+# direct coupling analysis (DCA) of residue coevolution from MSA
 # handle installation and prediction in a single file, "modular" 
 
 # REF
-#https://github.com/idptools/metapredict
+https://github.com/rdk/p2rank
 
 # ----------------------------------------    PREAMBLE
 setup=0
 input="NA"
 output="NA"
-program="metapredict (disorder from sequence)"
-py_env_dir="$HOME/envs/metapredict"
+program="p2rank"
+#py_env_dir="$HOME/envs/ProFOLD"
 
 #!/bin/bash
 for i in "$@"
@@ -38,8 +38,8 @@ done
 
 echo "--------------------------------------------------------------------"
 echo "usage examples:"
-echo " Seq2Disorder.sh -s   # this installs all dependencies"
-echo " Seq2Disorder.sh -i=my.fasta -o=disorder_pred.csv   # this runs stuff"
+echo " msa2DCA.sh -s   # this installs all dependencies"
+echo " msa2DCA.sh -i=my.fasta -o=output.csv   # this runs stuff"
 echo "--------------------------------------------------------------------"
 #echo "should setup:  $setup"
 #echo "file to process: $input"
@@ -48,30 +48,16 @@ echo "--------------------------------------------------------------------"
 # ----------------------------------------    RUN
 
 if [ $setup = 1 ]; then
-    if [ -d $py_env_dir ] 
-    then
-        echo "$program already has virtual environment!" 
-        exit 0
-    else
-        echo "installing:    $program"
-        python3 -m venv ~/envs/metapredict
-        source ~/envs/metapredict/bin/activate
-        pip install metapredict
-        deactivate
-    fi
-    exit 0
+    wget https://github.com/rdk/p2rank/releases/download/2.4/p2rank_2.4.tar.gz
+    gunzip p2rank_2.4.tar.gz
+    tar -xvf p2rank_2.4.tar
 else
     if [ "${input}" != "NA" ] && [ "${ouput}" != "NA" ]; then
     echo "Running $program"
-    source ~/envs/metapredict/bin/activate
-    metapredict-predict-disorder $input -o /tmp/disorder1.csv 
-    sed 's/, /\n/g' /tmp/disorder1.csv  | tail -n +2 > ${output}
-    rm /tmp/disorder1.csv 
-    echo "complete"
-    deactivate
+    input=/query/HCMV_UL54.pdb
+    /tools/p2rank_2.4/prank predict -f ${input} -o /tmp/p2rank
     else
         echo "no idea what to do... give me an i/o or setup"
         exit 1
     fi
 fi
-
