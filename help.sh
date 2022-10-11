@@ -1,12 +1,3 @@
-############### SINGULARITY
-# build the image
-#sudo singularity build mutationfeatures.sif mutationfeatures.def 
-
-# add -v so we mount any databases
-
-
-
-
 ############### PODMAN
 # build image
 podman build . -t mf

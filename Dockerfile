@@ -41,6 +41,24 @@ RUN Rscript /app/install_r_packages.R
 RUN /app/install_stuff.sh
 
 
+RUN bash /app/Seq2Disorder.sh -s
+RUN bash /app/Seq2SecStruc.sh -s
+RUN cd /tools ; bash /app/pdb2ProtLigSite.sh -s
+ 
+COPY mf.R /app
+
+
+
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["Rscript /app/mf.R"]
+
+
+
+
+
+
+
+
 ### data
 # uniref50 - local files
 # uniref50 - reproduceable
@@ -51,7 +69,6 @@ RUN /app/install_stuff.sh
 # to add
 # interproscan
 # tmhmm
-# signalp
 # interproscan
 # psipred
 # iupred
@@ -59,12 +76,10 @@ RUN /app/install_stuff.sh
 # pfam https://www.biostars.org/p/214726/
 # https://www.conkit.org/en/latest/
 
-RUN bash /app/Seq2Disorder.sh -s
-RUN bash /app/Seq2SecStruc.sh -s
 
-COPY mf.R /app
-
+# similar tools - look at feature space
+https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2527-1
 
 
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["Rscript /app/mf.R"]
+##### ideas
+# what about a 3d voxel from the middle of each residue, where we generate an autoencoder?

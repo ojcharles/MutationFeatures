@@ -13,9 +13,21 @@ This is a repository that defines the tool and docker container.
 
 
 
-`
-usage 
-`
+REQUIREMENTS
+- a blast formatted database in ./db
+- a folder called ./temp
+- a query fasta
+- optionally a query pdb
+
+USAGE
+ currently this runs a specific file, i will abstract this.
+`podman run --rm -it --name mf \
+    -v ./db:/db \
+    -v ./lib:/mflibs \
+    -v ./query:/query \
+    -v ./temp:/tmp \
+    mf`
+
 
 Oscar J charles 2022
 
