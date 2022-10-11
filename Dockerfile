@@ -61,6 +61,7 @@ RUN /app/install_stuff.sh
 
 RUN bash /app/Seq2Disorder.sh -s
 RUN bash /app/Seq2SecStruc.sh -s
+RUN cd /tools ; bash /app/pdb2ProtLigSite.sh -s
 
 COPY mf.R /app
 
