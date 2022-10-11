@@ -17,12 +17,16 @@ struc   dssp_psi    y   Y
 struc   dssp_rsa    y   Y
 struc   seq2disorder    Y   y
 struc   seq2secstruc    Y   y
-drug?
+drug    p2rank  Y   y
 
 
 # todo
 https://github.com/KIT-MBS/pydca
-https://github.com/djparente/coevol-utils
 https://github.com/realbigws/PDB_Tool
 https://github.com/AntoinePassemiers/Wynona
 https://github.com/biopython/biopython/blob/master/Bio/PDB/ResidueDepth.py
+
+
+# ignore for reasons
+#https://github.com/djparente/coevol-utils
+#https://github.com/fusong-ju/ProFOLD # requires pyrosetta skip for now

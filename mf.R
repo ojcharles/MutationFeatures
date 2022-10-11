@@ -235,6 +235,11 @@ colnames(struc$seq2SecStruc) = c("loc", "struc_seq2ss_ss",
 "struc_seq2ss_C", "struc_seq2ss_E", "struc_seq2ss_H")
 df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
 
+
+
+
+
+
 # --------------------  from structure
 ### DSSP
 if(use_pdb){
@@ -359,6 +364,29 @@ if(use_pdb){
   df = merge(df, dssp, by.x = "loc", by.y = "resnum")
 
 
+}
+
+
+
+# --------------------  protein ligand binding site complex
+### p2rank
+# predict where the most likely binding pocket is
+# which residues are involved?
+
+if(use_pdb){
+  command = paste0("/tools/p2rank_2.4/prank predict -f ",pdb_file," -o /tmp/p2rank") 
+  system(command)
+  tfile = list.files("/tmp/p2rank", "*.pdb_residues.csv", full.names = T)
+  tdf = read.csv(tfile)
+  #residue part of key ligand site? 0 is not, 1 is yes
+  ligand_interracting_locs = tdf[tdf$pocket==1,2]
+  df$ligand_p2rank_best_pocket = 0
+  df[ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
+
+  # generic zscore over all pockets
+  tdf2 = tdf[,c(2,5,6)]
+  colnames(tdf2) = c("loc", "ligand_p2rank_zscore", "ligand_p2rank_prob")
+  df = merge(df, tdf2, by = "loc", all.x = T)
 }
 
 
