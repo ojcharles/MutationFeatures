@@ -2,13 +2,13 @@
 # for use in identifying residues that are closely contacting
 
 # Oscar Charles 2022
-
+import sys
 import Bio.PDB
 import numpy as np
 import pandas as pd
 
 pdb_code = ":)"
-pdb_filename = "query/HCMV_UL54.pdb" 
+pdb_filename = sys.argv[1]
 
 def calc_residue_dist(residue_one, residue_two) :
     """Returns the C-alpha distance between two residues"""
@@ -35,7 +35,7 @@ df = pd.DataFrame({ 'loc': range(1,nloc),
     'struc_mean_5_closest_residues': 0.0} )
 
 for i in range(0 , dist_matrix.shape[0]) :
-    print(i)
+    #print(i)
     # return the k closest residues
     k = 2
     dists = dist_matrix[i]
@@ -47,4 +47,5 @@ for i in range(0 , dist_matrix.shape[0]) :
     idx = np.delete(idx, 0) # remove self
     df.loc[i, 'struc_mean_5_closest_residues'] = np.mean(dists[idx[:k]])
 
-df.to_csv("/tmp/struc_mean_k_closest_residues.csv")
+df.to_csv(sys.argv[2], index = False)
+# 

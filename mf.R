@@ -420,6 +420,14 @@ if(use_pdb){
 
 
 
+# --------------------  Residue clustering, how close are closest [2,5] residues
+if(use_pdb){
+  command = paste0("python3 /app/pdb2ResDistMatrix.py ", pdb_file, " /tmp/struc_mean_k_closest_residues.csv")
+  system(command)
+  res_clust = read.csv("/tmp/struc_mean_k_closest_residues.csv")
+  df = merge(df, res_clust, by = "loc", all.x = T)
+}
+
 
 
 
