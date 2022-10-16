@@ -114,9 +114,9 @@ for(r in 1:nrow(df)){
 command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mflibs/conservation_code/matrix/blosum62.bla -p FALSE -g 0.99 ",temp_blast_msa," > ",tdir,"/conservation.txt")
 system(command)
 conservation = data.frame(read.table(paste0(tdir,"/conservation.txt"),header = F, sep = "\t")[,1:2])
-colnames(conservation) = c("loc", "jsdiv")
-conservation$jsdiv = as.numeric(conservation$jsdiv)
-conservation[conservation$jsdiv < 0,2] = 0 # handle NA
+colnames(conservation) = c("loc", "conservation")
+conservation$conservation = as.numeric(conservation$conservation)
+conservation[conservation$conservation < 0,2] = 0 # handle NA
 df = merge(df, conservation, by = "loc", all.x = T)
 
 
