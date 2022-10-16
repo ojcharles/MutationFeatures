@@ -138,12 +138,31 @@ df = merge(df, psi_depth, by = "loc", all.x = T)
 
   
  
-  
-  
 
-  
-  
-  
+#--------------------  residue-residue coevolution
+# get loca-locb-coupling
+command = paste0("bash /app/msa2coupling.sh -i=", temp_blast_msa ,
+  " -o=/tmp/seq_evol_covar_coupling.tab")
+system(command)
+seq_coevol = read.table("/tmp/seq_evol_covar_coupling.tab")[,c(1,3,6)]
+colnames(seq_coevol) = c("loc", "locb", "coupling")
+
+# simplify to max coupling for loca
+# //todo, coupling to a p2rank loc?
+# //todo make image of loca-locb matrix?
+library(dplyr)
+#seq_coevol[,c(1,3)] %>% 
+seq_coevol2 = seq_coevol[,c(1,3)] %>% 
+             group_by(loc) %>%
+             summarise(max_coupling = max(coupling))
+
+df = merge(df, seq_coevol2, by = "loc", all.x = T)
+
+
+
+
+
+
   
 #--------------------  grantham / blossum
 # grantham
@@ -175,7 +194,17 @@ for(i in 1:nrow(blosum)){
 
 
 
-#--------------------  physical properties
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------Physiochemical Features
 # wdwradius
 # //todo vwd from, wvd to?
 vdw = read.csv("/mflibs/vdw_radius.csv", skip = 1)

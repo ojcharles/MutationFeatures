@@ -1,9 +1,10 @@
-type    tool-process    installed   incorporated
+type    tool-process    installed   incorporated    ref
 evol    pssm-uniref50   Y   Y
 evol    JensSha dvgc    Y   Y
 evol    msa_depth_psi   Y   Y
 evol    wt_mt_grantham  Y   Y
 evol    wt_mt_blosum62  Y   Y
+evol    max_res_cc  y   Y   https://github.com/debbiemarkslab/plmc
 phys    vdwradius_delta Y   y
 phys    hydromoment     Y   y
 phys    hydrophobicity   y   Y
@@ -20,13 +21,19 @@ struc   seq2secstruc    Y   y
 drug    p2rank  Y   y
 
 
+
+
 # todo
+
 https://github.com/KIT-MBS/pydca
 https://github.com/realbigws/PDB_Tool
 https://github.com/AntoinePassemiers/Wynona
 https://github.com/biopython/biopython/blob/master/Bio/PDB/ResidueDepth.py
 
 
+
 # ignore for reasons
 #https://github.com/djparente/coevol-utils
 #https://github.com/fusong-ju/ProFOLD # requires pyrosetta skip for now
+# https://academic.oup.com/nar/article/33/suppl_1/D269/2505413 - we cover all these :)
+
