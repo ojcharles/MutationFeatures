@@ -43,7 +43,11 @@ RUN /app/install_stuff.sh
 
 RUN bash /app/Seq2Disorder.sh -s
 RUN bash /app/Seq2SecStruc.sh -s
-RUN cd /tools ; bash /app/pdb2ProtLigSite.sh -s
+RUN bash /app/pdb2ProtLigSite.sh -s
+RUN bash /app/msa2coupling.sh -s
+
+RUN python3 -m pip install biopython
+RUN apt install -y nano
  
 COPY mf.R /app
 
@@ -52,34 +56,3 @@ COPY mf.R /app
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["Rscript /app/mf.R"]
 
-
-
-
-
-
-
-
-### data
-# uniref50 - local files
-# uniref50 - reproduceable
-# https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/uniref50.fasta.gz
-#RUN makeblastdb /app/uniref50.fastq
-
-
-# to add
-# interproscan
-# tmhmm
-# interproscan
-# psipred
-# iupred
-# disopred
-# pfam https://www.biostars.org/p/214726/
-# https://www.conkit.org/en/latest/
-
-
-# similar tools - look at feature space
-https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2527-1
-
-
-##### ideas
-# what about a 3d voxel from the middle of each residue, where we generate an autoencoder?

@@ -1,9 +1,10 @@
-type    tool-process    installed   incorporated
+type    tool-process    installed   incorporated    ref
 evol    pssm-uniref50   Y   Y
 evol    JensSha dvgc    Y   Y
 evol    msa_depth_psi   Y   Y
 evol    wt_mt_grantham  Y   Y
 evol    wt_mt_blosum62  Y   Y
+evol    max_res_cc  y   Y   https://github.com/debbiemarkslab/plmc
 phys    vdwradius_delta Y   y
 phys    hydromoment     Y   y
 phys    hydrophobicity   y   Y
@@ -17,16 +18,58 @@ struc   dssp_psi    y   Y
 struc   dssp_rsa    y   Y
 struc   seq2disorder    Y   y
 struc   seq2secstruc    Y   y
+struc   pdb2resdist Y   n   ./scripts/.py
 drug    p2rank  Y   y
 
 
+
+
 # todo
+
+#psipred
 https://github.com/KIT-MBS/pydca
 https://github.com/realbigws/PDB_Tool
 https://github.com/AntoinePassemiers/Wynona
 https://github.com/biopython/biopython/blob/master/Bio/PDB/ResidueDepth.py
 
 
+
 # ignore for reasons
-#https://github.com/djparente/coevol-utils
-#https://github.com/fusong-ju/ProFOLD # requires pyrosetta skip for now
+# https://github.com/djparente/coevol-utils
+# https://github.com/fusong-ju/ProFOLD # requires pyrosetta skip for now
+# https://academic.oup.com/nar/article/33/suppl_1/D269/2505413 # we cover all these :)
+# https://github.com/StanIsAdmin/PyProt # nothing new
+
+
+
+
+
+
+
+
+
+
+### data
+# uniref50 - local files
+# uniref50 - reproduceable
+# https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/uniref50.fasta.gz
+#RUN makeblastdb /app/uniref50.fastq
+
+
+# to add
+# interproscan
+# tmhmm
+# interproscan
+# psipred
+# iupred
+# disopred
+# pfam https://www.biostars.org/p/214726/
+# https://www.conkit.org/en/latest/
+
+
+# similar tools - look at feature space
+https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2527-1
+
+
+##### ideas
+# what about a 3d voxel from the middle of each residue, where we generate an autoencoder?
