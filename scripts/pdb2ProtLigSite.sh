@@ -4,7 +4,7 @@
 # handle installation and prediction in a single file, "modular" 
 
 # REF
-https://github.com/rdk/p2rank
+# https://github.com/rdk/p2rank
 
 # ----------------------------------------    PREAMBLE
 setup=0

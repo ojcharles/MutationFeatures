@@ -114,9 +114,9 @@ for(r in 1:nrow(df)){
 command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mflibs/conservation_code/matrix/blosum62.bla -p FALSE -g 0.99 ",temp_blast_msa," > ",tdir,"/conservation.txt")
 system(command)
 conservation = data.frame(read.table(paste0(tdir,"/conservation.txt"),header = F, sep = "\t")[,1:2])
-colnames(conservation) = c("loc", "jsdiv")
-conservation$jsdiv = as.numeric(conservation$jsdiv)
-conservation[conservation$jsdiv < 0,2] = 0 # handle NA
+colnames(conservation) = c("loc", "conservation")
+conservation$conservation = as.numeric(conservation$conservation)
+conservation[conservation$conservation < 0,2] = 0 # handle NA
 df = merge(df, conservation, by = "loc", all.x = T)
 
 
@@ -419,6 +419,14 @@ if(use_pdb){
 }
 
 
+
+# --------------------  Residue clustering, how close are closest [2,5] residues
+if(use_pdb){
+  command = paste0("python3 /app/pdb2ResDistMatrix.py ", pdb_file, " /tmp/struc_mean_k_closest_residues.csv")
+  system(command)
+  res_clust = read.csv("/tmp/struc_mean_k_closest_residues.csv")
+  df = merge(df, res_clust, by = "loc", all.x = T)
+}
 
 
 

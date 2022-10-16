@@ -46,7 +46,7 @@ RUN bash /app/Seq2SecStruc.sh -s
 RUN bash /app/pdb2ProtLigSite.sh -s
 RUN bash /app/msa2coupling.sh -s
 
-RUN python3 -m pip install biopython
+RUN python3 -m pip install biopython numpy pandas
 RUN apt install -y nano
  
 COPY mf.R /app

@@ -41,6 +41,11 @@ makeblastdb -in db/uniref50_virus.fasta -parse_seqids -dbtype prot`
 ## Requirements
 
 - a blast formatted database in ./db
+`mkdir db
+wget https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/uniref50.fasta.gz -P ./db
+gunzip ./db/uniref50.fasta.gz
+makeblastdb ./db/uniref50.fasta
+`
 
 
 Oscar J charles 2022
