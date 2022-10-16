@@ -43,7 +43,10 @@ RUN /app/install_stuff.sh
 
 RUN bash /app/Seq2Disorder.sh -s
 RUN bash /app/Seq2SecStruc.sh -s
-RUN cd /tools ; bash /app/pdb2ProtLigSite.sh -s
+RUN bash /app/pdb2ProtLigSite.sh -s
+
+RUN python3 -m pip install biopython
+RUN apt install -y nano
  
 COPY mf.R /app
 
