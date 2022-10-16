@@ -48,4 +48,3 @@ for i in range(0 , dist_matrix.shape[0]) :
     df.loc[i, 'struc_mean_5_closest_residues'] = np.mean(dists[idx[:k]])
 
 df.to_csv("/tmp/struc_mean_k_closest_residues.csv")
-
