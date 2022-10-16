@@ -38,8 +38,8 @@ done
 
 echo "--------------------------------------------------------------------"
 echo "usage examples:"
-echo " msa2DCA.sh -s   # this installs all dependencies"
-echo " msa2DCA.sh -i=my.fasta -o=output.csv   # this runs stuff"
+echo " pdb2ProtLigSite.sh -s   # this installs all dependencies"
+echo " pdb2ProtLigSite.sh -i=my.fasta -o=output.csv   # this runs stuff"
 echo "--------------------------------------------------------------------"
 #echo "should setup:  $setup"
 #echo "file to process: $input"
@@ -48,6 +48,7 @@ echo "--------------------------------------------------------------------"
 # ----------------------------------------    RUN
 
 if [ $setup = 1 ]; then
+    cd /tools
     wget https://github.com/rdk/p2rank/releases/download/2.4/p2rank_2.4.tar.gz
     gunzip p2rank_2.4.tar.gz
     tar -xvf p2rank_2.4.tar
