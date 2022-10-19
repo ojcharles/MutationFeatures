@@ -281,7 +281,7 @@ df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
 
 
 
-# --------------------  PDB -> strucrual features
+# --------------------  PDB -> structural features
 ### DSSP
 if(use_pdb){
   
@@ -406,11 +406,22 @@ if(use_pdb){
 
 
 
+# --------------------  Residue clustering, how close are closest [2,5] residues
+if(use_pdb){
+  command = paste0("python3 /app/pdb2ResDistMatrix.py ", pdb_file, " /tmp/pdb_struc_mean_k_closest_residues.csv")
+  system(command)
+  res_clust = read.csv("/tmp/pdb_struc_mean_k_closest_residues.csv")
+  colnames(df) = c("loc","pdb_struc_mean_2_closest_residues","pdb_struc_mean_5_closest_residues")
+  df = merge(df, res_clust, by = "loc", all.x = T)
+}
+
+
+
+
+
 # --------------------  protein ligand binding site complex
 ### p2rank
-# predict where the most likely binding pocket is
-# which residues are involved?
-
+# predict where the most likely binding pocket is.  which residues are involved?
 if(use_pdb){
   command = paste0("/tools/p2rank_2.4/prank predict -f ",pdb_file," -o /tmp/p2rank") 
   system(command)
@@ -420,22 +431,15 @@ if(use_pdb){
   ligand_interracting_locs = tdf[tdf$pocket==1,2]
   df$ligand_p2rank_best_pocket = 0
   df[ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
-
   # generic zscore over all pockets
   tdf2 = tdf[,c(2,5,6)]
-  colnames(tdf2) = c("loc", "ligand_p2rank_zscore", "ligand_p2rank_prob")
+  colnames(tdf2) = c("loc", "pdb_ligand_p2rank_zscore", "pdb_ligand_p2rank_prob")
   df = merge(df, tdf2, by = "loc", all.x = T)
 }
 
 
 
-# --------------------  Residue clustering, how close are closest [2,5] residues
-if(use_pdb){
-  command = paste0("python3 /app/pdb2ResDistMatrix.py ", pdb_file, " /tmp/struc_mean_k_closest_residues.csv")
-  system(command)
-  res_clust = read.csv("/tmp/struc_mean_k_closest_residues.csv")
-  df = merge(df, res_clust, by = "loc", all.x = T)
-}
+
 
 
 
