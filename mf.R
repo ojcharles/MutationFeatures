@@ -213,50 +213,44 @@ for(i in 1:nrow(blosum)){
 
 
 
-
-
-
-
-
-
-
-
-
-
 # ------------------------------------------------------------Physiochemical Features
 # wdwradius
-# //todo vwd from, wvd to?
 vdw = read.csv("/mflibs/vdw_radius.csv", skip = 1)
-df$vdw_radius_delta = 0
+df$seq_phys_vdw_radius_wt = 0
+df$seq_phys_vdw_radius_mt = 0
+df$seq_phys_vdw_radius_delta = 0
 for(r in 1:nrow(df)){
   wtAA = df$wt[r]
   mtAA = df$mt[r]
-  df$vdw_radius_delta[r] = round(abs(vdw[which(vdw$AA == wtAA),2] - vdw[which(vdw$AA == mtAA),2]),1)
+  df$seq_phys_vdw_radius_wt = round(vdw[which(vdw$AA == wtAA),2],1)
+  df$seq_phys_vdw_radius_mt = round(vdw[which(vdw$AA == mtAA),2],1)
+  df$seq_phys_vdw_radius_delta[r] = round(abs(vdw[which(vdw$AA == wtAA),2] - vdw[which(vdw$AA == mtAA),2]),1)
 }
 
 
+
+
+
 # dydrogen moment
-df$from_hydro = hmoment(df$wt)
-df$to_hydro = hmoment(df$mt)
-df$change_hydro = abs(df$to_hydro - df$from_hydro)
+df$seq_phys_wt_hydro = hmoment(df$wt)
+df$seq_phys_mt_hydro = hmoment(df$mt)
+df$change_hydro = abs(df$seq_phys_mt_hydro - df$seq_phys_wt_hydro)
 # hydrophobicity
-df$from_hydrophobicity = hydrophobicity(df$wt)
-df$to_hydrophobicity = hydrophobicity(df$mt)
-df$change_hydrophobicity = abs(df$to_hydrophobicity - df$from_hydrophobicity)
+df$seq_phys_wt_hydrophobicity = hydrophobicity(df$wt)
+df$seq_phys_mt_hydrophobicity = hydrophobicity(df$mt)
+df$change_hydrophobicity = abs(df$seq_phys_mt_hydrophobicity - df$seq_phys_wt_hydrophobicity)
 # isoelectric point
-df$from_PI = pI(df$wt)
-df$to_PI = pI(df$mt)
-df$change_PI = df$to_hydro - df$from_hydro
+df$seq_phys_wt_PI = pI(df$wt)
+df$seq_phys_mt_PI = pI(df$mt)
+df$change_PI = df$seq_phys_mt_hydro - df$seq_phys_wt_hydro
 # molweight
-df$from_mw = mw(df$wt)
-df$to_mw = mw(df$mt)
-df$change_mw = abs(df$to_mw - df$from_mw)
+df$seq_phys_wt_mw = mw(df$wt)
+df$seq_phys_mt_mw = mw(df$mt)
+df$change_mw = abs(df$seq_phys_mt_mw - df$seq_phys_wt_mw)
 # charge
-df$from_charge = charge(df$wt)
-df$to_charge = charge(df$mt)
-df$change_charge = abs(df$to_charge - df$from_charge)
-
-
+df$seq_phys_wt_charge = charge(df$wt)
+df$seq_phys_mt_charge = charge(df$mt)
+df$change_charge = abs(df$seq_phys_mt_charge - df$seq_phys_wt_charge)
 
 
 
