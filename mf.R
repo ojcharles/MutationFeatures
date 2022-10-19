@@ -11,7 +11,7 @@ v_eval = 1e-7
 
 # passed arguments
 # //todo make pass argument
-blast_db_name = "uniref50_virus.fasta"
+blast_db_name = "uniref50.fasta"
 threads = 32
 
 library(stringr)
@@ -39,9 +39,6 @@ amino_acids = c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M","N", "P", 
 wt_mt = expand.grid(inseq_vector, amino_acids)
 df = cbind(locs, wt_mt)
 colnames(df) = c("loc", "wt", "mt")
-head(df)
-
-
 
 ##### is there a PDB?
 pdb_file = gsub(".fasta", ".pdb", infasta )
@@ -50,11 +47,6 @@ use_pdb = file.exists(pdb_file)
 
 
 # ------------------------------------------------------------Evolutionary Features
-
-
-
-
-
 # -------------------- PSSM
 tdir = "/tmp"
 pssm_file = paste0(tdir, "/seq_evol_pssm.txt")
@@ -121,7 +113,7 @@ command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mf
 system(command)
 conservation = data.frame(read.table(paste0(tdir,"/seq_evol_conservation.txt"),header = F, sep = "\t")[,1:2])
 colnames(conservation) = c("loc", "seq_evol_conservation")
-conservation$seq_evol_conservation = as.numeric(conservation$conservation)
+conservation$seq_evol_conservation = as.numeric(conservation$seq_evol_conservation)
 conservation[conservation$seq_evol_conservation < 0,2] = 0 # handle NA
 df = merge(df, conservation, by = "loc", all.x = T)
 
@@ -168,9 +160,9 @@ seq_coevol2 = seq_coevol[,c(1,3)] %>%
             summarise(seq_evol_coupling_mean = mean(coupling))
 df = merge(df, seq_coevol2, by = "loc", all.x = T)
 seq_coevol2 = seq_coevol[,c(1,3)] %>% 
-            arrange(desc(coupling)) %>%     
-            slice(1 : as.integer(locs / 10) ) %>%
-            group_by(loc) %>%
+            arrange(desc(coupling)) %>%   
+            group_by(loc) %>% 
+            slice(1 : as.integer( max(locs) / 10))   %>%
             summarise(seq_evol_top10th_coupling_mean = mean(coupling))
 df = merge(df, seq_coevol2, by = "loc", all.x = T)
 
@@ -411,7 +403,7 @@ if(use_pdb){
   command = paste0("python3 /app/pdb2ResDistMatrix.py ", pdb_file, " /tmp/pdb_struc_mean_k_closest_residues.csv")
   system(command)
   res_clust = read.csv("/tmp/pdb_struc_mean_k_closest_residues.csv")
-  colnames(df) = c("loc","pdb_struc_mean_2_closest_residues","pdb_struc_mean_5_closest_residues")
+  colnames(res_clust) = c("loc","pdb_struc_mean_2_closest_residues","pdb_struc_mean_5_closest_residues")
   df = merge(df, res_clust, by = "loc", all.x = T)
 }
 
