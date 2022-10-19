@@ -1,6 +1,6 @@
 #!/bin/bash
 #a shell script that handles install and run of disorder prediction
-
+# ref: https://github.com/psipred/s4pred
 # ----------------------------------------    PREAMBLE
 setup=0
 input="NA"

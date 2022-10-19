@@ -264,7 +264,7 @@ command = paste0("/app/Seq2Disorder.sh -i=", infasta,
   " -o=/tmp/seq2disorder.csv")
 system(command)
 struc$seq2disorder = read.csv("/tmp/seq2disorder.csv")
-colnames(struc$seq2disorder) = c("struc_seq2disorder")
+colnames(struc$seq2disorder) = c("seq_struc_disorder")
 struc$seq2disorder$loc = 1:nrow(struc$seq2disorder)
 df = merge(df, struc$seq2disorder, by = "loc", all.x = T)
 
@@ -273,23 +273,21 @@ command = paste0("/app/Seq2SecStruc.sh -i=", infasta,
   " -o=/tmp/seq2ss.csv")
 system(command)
 struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
-colnames(struc$seq2SecStruc) = c("loc", "struc_seq2ss_ss",
-"struc_seq2ss_C", "struc_seq2ss_E", "struc_seq2ss_H")
+colnames(struc$seq2SecStruc) = c("loc", "seq_struc_seq2ss_ss",
+"seq_struc_seq2ss_C", "seq_struc_seq2ss_E", "seq_struc_seq2ss_H")
 df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
 
 
 
 
 
-
-# --------------------  from structure
+# --------------------  PDB -> strucrual features
 ### DSSP
 if(use_pdb){
   
   parse.dssp <- function(file){
     ## --------------- Reading the dssp file ------------------ ##
     con <- file(file, 'r')
-    
     counter <- 0
     resnum <- c()
     respdb <- c()
@@ -299,11 +297,9 @@ if(use_pdb){
     sasa <- c()
     phi <- c()
     psi <- c()
-    
     while(TRUE){
       line <- readLines(con, n = 1)
       counter <- counter + 1
-      
       if (counter == 1){
         l <- strsplit(line, split = "")[[1]]
         l <- paste(l, collapse = "")
@@ -313,7 +309,6 @@ if(use_pdb){
           first_valid_line <- 28 # dssp file coming from the sync
         }
       }
-      
       if (counter > first_valid_line & length(line) != 0){
         a <- strsplit(line, split = "")[[1]]
         resnum <- c(resnum, paste(a[1:5], collapse = ""))
@@ -344,14 +339,17 @@ if(use_pdb){
                                 ss, sasa, phi, psi), ncol = 8),
                         stringsAsFactors = FALSE)
     
-    colnames(df) <- c('resnum', 'respdb', 'chain', 'aa', 'ss',
-                      'asa', 'phi', 'psi')
+    colnames(df) <- c('pdb_struc_resnum', 'pdb_struc_dssp_respdb',
+                      'pdb_struc_dssp_chain', 'pdb_struc_dssp_aa',
+                      'pdb_struc_dssp_ss', 'pdb_struc_dssp_asa',
+                      'pdb_struc_dssp_phi', 'pdb_struc_dssp_psi')
     
-    df$resnum <- as.numeric(df$resnum)
-    df$respdb <- as.numeric(df$respdb)
-    df$asa <- as.numeric(df$asa)
-    df$phi <- as.numeric(df$phi)
-    df$psi <- as.numeric(df$psi)
+    df$pdb_struc_dssp_resnum <- as.numeric(df$pdb_struc_dssp_resnum)
+    df$pdb_struc_dssp_respdb <- as.numeric(df$pdb_struc_dssp_respdb)
+    df$pdb_struc_dssp_asa <- as.numeric(df$pdb_struc_dssp_asa)
+    df$pdb_struc_dssp_phi <- as.numeric(df$pdb_struc_dssp_phi)
+    df$pdb_struc_dssp_psi <- as.numeric(df$pdb_struc_dssp_psi)
+    df$pdb_struc_dssp_ss <- as.numeric(df$pdb_struc_dssp_ss)
     
     ## --------------- Remove empty lines between chains ------------- ##
     badlines <- c()
@@ -364,8 +362,6 @@ if(use_pdb){
       df <- df[-badlines,]
       df$resnum <- 1:nrow(df)
     }
-    
-    
     
     ## --------------- ASA -> RSA ------------- ##
     ##### rsa
@@ -404,9 +400,9 @@ if(use_pdb){
   names(dssp)[2:6] = paste0("dssp_",names(dssp)[2:6])
 
   df = merge(df, dssp, by.x = "loc", by.y = "resnum")
-
-
 }
+
+
 
 
 
