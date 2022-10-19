@@ -34,7 +34,8 @@ inseq = as.character(unlist(readFASTA(infasta)))
 inseq_vector = as.vector(str_split_fixed(inseq, pattern = "", n = nchar(inseq)))
 
 # generate a table of location, wild type, mutant type residue
-locs = 1:length(inseq_vector)
+nlocs = length(inseq_vector)
+locs = 1:nlocs
 amino_acids = c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M","N", "P", "Q", "R", "S", "T", "V", "W", "Y")
 wt_mt = expand.grid(inseq_vector, amino_acids)
 df = cbind(locs, wt_mt)
@@ -200,6 +201,31 @@ for(i in 1:nrow(blosum)){
   df[df$wt ==wt & df$mt == mt,]$seq_evol_blosum62 = blosum$blosum[i]
   df[df$mt ==wt & df$wt == mt,]$seq_evol_blosum62 = blosum$blosum[i]
 }
+
+
+
+
+
+# proximity to N and C terminus
+df$seq_struc_proximity50_N_C = 0
+df[df$loc < 50,]$seq_struc_proximity50_N_C = 1
+df[df$loc > (nlocs - 50),]$seq_struc_proximity50_N_C = 1
+
+
+
+# sequence diversity measures - from bio3d
+t_msa = bio3d::read.fasta(temp_blast_msa)
+t = bio3d::entropy(t_msa)
+t1 = data.frame(loc = 1:nlocs,
+  seq_evol_SHentropy = t$H,
+  seq_evol_SHentropy_norm = t$H.norm,
+  seq_evol_SHentropy10 = t$H.10,
+  seq_evol_SHentropy10_norm = t$H.10.norm,
+  seq_evol_conservation_bio3d = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "bio3d"),
+  seq_evol_conservation_blosum62 = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "blosum62")
+  #seq_evol_conservation_pam30 = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "pam30") # fails
+  )
+df = merge(df, t1, by = "loc", all.x = T)
 
 
 
@@ -429,6 +455,11 @@ if(use_pdb){
   df = merge(df, tdf2, by = "loc", all.x = T)
 }
 
+
+
+
+
+#####
 
 
 
