@@ -4,13 +4,15 @@
 
 # -------------------- Setup
 ### runtime vars
+# //todo make pass argument
 infasta = paste0("/query/HCMV_UL54.fasta")
 #v_evals = c("1E-100", "1E-50", "1e-7")
 v_eval = 1e-7
 
 # passed arguments
-# //todo make a rgument
+# //todo make pass argument
 blast_db_name = "uniref50_virus.fasta"
+threads = 32
 
 library(stringr)
 library(Peptides)
@@ -48,15 +50,19 @@ use_pdb = file.exists(pdb_file)
 
 
 # ------------------------------------------------------------Evolutionary Features
-# -------------------- PSSM
 
+
+
+
+
+# -------------------- PSSM
 tdir = "/tmp"
-pssm_file = paste0(tdir, "/pssm.txt")
+pssm_file = paste0(tdir, "/seq_evol_pssm.txt")
 temp_blast = paste0(tdir,"/psiblast.fa")
 temp_blast_msa = paste0(tdir,"/psiblast_msa.fa")
 
 # search for homology
-command = paste0("psiblast -num_threads 6 -query ", infasta," -db db/", blast_db_name, " -num_iterations 2 -out_ascii_pssm ",
+command = paste0("psiblast -num_threads ", threads ," -query ", infasta," -db db/", blast_db_name, " -num_iterations 2 -out_ascii_pssm ",
                               pssm_file," -save_pssm_after_last_round  -out ",temp_blast," -outfmt '6 qseqid sseqid sseq qstart' -inclusion_ethresh ",v_eval ," -evalue ", v_eval," ;")
 system(command)
 
@@ -71,9 +77,8 @@ for(i in 1:nrow(t)){
 writeLines(out_fasta, temp_blast)
 
 # align outputted fasta
-command = paste0("mafft --add  ", temp_blast," --keeplength --thread 4 ",infasta, " > ", temp_blast_msa," 2>",tdir,"/err.txt" )
+command = paste0("mafft --add  ", temp_blast," --keeplength --thread ",  threads ," ",infasta, " > ", temp_blast_msa," 2>",tdir,"/err.txt" )
 system(command)
-
 
 # function to take pssm file -> pssm score matrix
 pssmfile2df = function(pssm_file){
@@ -91,9 +96,7 @@ pssmfile2df = function(pssm_file){
 }
 pssm = pssmfile2df(pssm_file)
 
-
-# //todo slow, profile.
-df$pssm_wt = 0; df$pssm_mt = 0; df$pssm_diff = 0;
+df$seq_evol_pssm_wt = 0; df$seq_evol_pssm_mt = 0; df$seq_evol_pssm_diff = 0;
 cols = colnames(pssm)
 for(r in 1:nrow(df)){
   pos = df$loc[r]
@@ -102,42 +105,49 @@ for(r in 1:nrow(df)){
   sus2 = pssm[pos,]
   wtcol = grep(wtAA, cols)
   mtcol = grep(mtAA, cols)
-  df$pssm_wt[r] = pssm[pos,wtcol]
-  df$pssm_mt[r] = pssm[pos,mtcol]
-  df$pssm_diff[r] = abs(as.numeric(df$pssm_mt[r]) - as.numeric(df$pssm_wt[r]))
-  df$pssm_mean[r] = mean(as.numeric(pssm[pos,]))
+  df$seq_evol_pssm_wt[r] = pssm[pos,wtcol]
+  df$seq_evol_pssm_mt[r] = pssm[pos,mtcol]
+  df$seq_evol_pssm_diff[r] = abs(as.numeric(df$seq_evol_pssm_mt[r]) - as.numeric(df$seq_evol_pssm_wt[r]))
+  df$seq_evol_pssm_mean[r] = mean(as.numeric(pssm[pos,]))
 }
 
 
-# -------------------- sequence conservation
-# # https://compbio.cs.princeton.edu/conservation/
-command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mflibs/conservation_code/matrix/blosum62.bla -p FALSE -g 0.99 ",temp_blast_msa," > ",tdir,"/conservation.txt")
+
+
+
+# -------------------- princeton conservation
+# ref: https://compbio.cs.princeton.edu/conservation/
+command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mflibs/conservation_code/matrix/blosum62.bla -p FALSE -g 0.99 ",temp_blast_msa," > ",tdir,"/seq_evol_conservation.txt")
 system(command)
-conservation = data.frame(read.table(paste0(tdir,"/conservation.txt"),header = F, sep = "\t")[,1:2])
-colnames(conservation) = c("loc", "conservation")
-conservation$conservation = as.numeric(conservation$conservation)
-conservation[conservation$conservation < 0,2] = 0 # handle NA
+conservation = data.frame(read.table(paste0(tdir,"/seq_evol_conservation.txt"),header = F, sep = "\t")[,1:2])
+colnames(conservation) = c("loc", "seq_evol_conservation")
+conservation$seq_evol_conservation = as.numeric(conservation$conservation)
+conservation[conservation$seq_evol_conservation < 0,2] = 0 # handle NA
 df = merge(df, conservation, by = "loc", all.x = T)
 
 
-### psi-blast conservation score
+
+
+
+# -------------------- psi-blast conservation
 # //todo depthnorm could do with a more informative value
 # https://bioconductor.org/packages/release/bioc/vignettes/msa/inst/doc/msa.pdf
 a = Biostrings::readAAStringSet(temp_blast_msa)
 a = as.matrix(a)
-psi_depth = data.frame(loc = 1:ncol(a), psi_depth = 0, psi_unique = 0)
+psi_depth = data.frame(loc = 1:ncol(a), seq_evol_psi_depth = 0, seq_evol_psi_unique = 0)
 for(i in 1:ncol(a)){
   t = as.character(a[,i])
   t = t[t != "-"]
-  psi_depth$psi_depth[i] = round(length(t),0)
-  psi_depth$psi_depthnorm[i] = round(length(t) / nrow(a),2)
-  psi_depth$psi_unique[i] = length(unique(t))
+  psi_depth$seq_evol_psi_depth[i] = round(length(t),0)
+  psi_depth$seq_evol_psi_depthnorm[i] = round(length(t) / nrow(a),2)
+  psi_depth$seq_evol_psi_unique[i] = length(unique(t))
   
 }
 df = merge(df, psi_depth, by = "loc", all.x = T)
 
-  
+
  
+
 
 #--------------------  residue-residue coevolution
 # get loca-locb-coupling
@@ -146,35 +156,44 @@ command = paste0("bash /app/msa2coupling.sh -i=", temp_blast_msa ,
 system(command)
 seq_coevol = read.table("/tmp/seq_evol_covar_coupling.tab")[,c(1,3,6)]
 colnames(seq_coevol) = c("loc", "locb", "coupling")
-
-# simplify to max coupling for loca
 # //todo, coupling to a p2rank loc?
 # //todo make image of loca-locb matrix?
 library(dplyr)
-#seq_coevol[,c(1,3)] %>% 
 seq_coevol2 = seq_coevol[,c(1,3)] %>% 
-             group_by(loc) %>%
-             summarise(max_coupling = max(coupling))
-
+            group_by(loc) %>%
+            summarise(seq_evol_max_residue_coupling = max(coupling))
+df = merge(df, seq_coevol2, by = "loc", all.x = T)
+seq_coevol2 = seq_coevol[,c(1,3)] %>% 
+            group_by(loc) %>%
+            summarise(seq_evol_coupling_mean = mean(coupling))
+df = merge(df, seq_coevol2, by = "loc", all.x = T)
+seq_coevol2 = seq_coevol[,c(1,3)] %>% 
+            arrange(desc(coupling)) %>%     
+            slice(1 : as.integer(locs / 10) ) %>%
+            group_by(loc) %>%
+            summarise(seq_evol_top10th_coupling_mean = mean(coupling))
 df = merge(df, seq_coevol2, by = "loc", all.x = T)
 
 
 
 
 
-
-  
-#--------------------  grantham / blossum
+#--------------------  Amino acid substitution scores
 # grantham
 grantham = readr::read_tsv("/mflibs/grantham.tsv") %>%
   tidyr:: gather(SECOND,SCORE, -FIRST) %>% dplyr::filter(SCORE > 0)  
-df$grantham = 0
+df$seq_evol_grantham = 0
 for(i in 1:nrow(grantham)){
   wt = grantham$FIRST[i]
   mt = grantham$SECOND[i]
-  df[df$wt ==wt & df$mt == mt,]$grantham = grantham$SCORE[i]
-  df[df$mt ==wt & df$wt == mt,]$grantham = grantham$SCORE[i]
+  df[df$wt ==wt & df$mt == mt,]$seq_evol_grantham = grantham$SCORE[i]
+  df[df$mt ==wt & df$wt == mt,]$seq_evol_grantham = grantham$SCORE[i]
 }
+
+
+
+
+
 
 #blossum
 data(AABLOSUM62)
@@ -182,12 +201,12 @@ blosum = data.frame(AABLOSUM62)
 blosum$wt = rownames(blosum)
 blosum = reshape2::melt(blosum, id.vars = "wt")
 colnames(blosum) = c("wt", "mt", "blosum")
-df$blosum62 = 0
+df$seq_evol_blosum62 = 0
 for(i in 1:nrow(blosum)){
   wt = blosum$wt[i]
   mt = blosum$mt[i]
-  df[df$wt ==wt & df$mt == mt,]$blosum62 = blosum$blosum[i]
-  df[df$mt ==wt & df$wt == mt,]$blosum62 = blosum$blosum[i]
+  df[df$wt ==wt & df$mt == mt,]$seq_evol_blosum62 = blosum$blosum[i]
+  df[df$mt ==wt & df$wt == mt,]$seq_evol_blosum62 = blosum$blosum[i]
 }
 
 
