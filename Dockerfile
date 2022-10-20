@@ -32,8 +32,8 @@ RUN apt install -y python3-pymol
 RUN python3 -m pip install -U pybiolib
 
 # R packages
-RUN apt install -y r-cran-stringr r-cran-ggplot2 r-cran-reshape2 r-cran-ggpubr r-cran-tidyr \
-    r-cran-readr r-cran-ape r-cran-biocmanager 
+RUN apt install -y r-cran-stringr r-cran-reshape2 r-cran-ggpubr r-cran-tidyr \
+    r-cran-readr r-cran-ape r-cran-devtools r-cran-biocmanager 
 RUN R CMD javareconf
 RUN apt install -y curl libcurl4-openssl-dev
 COPY ./scripts/ /app/
@@ -46,7 +46,7 @@ RUN bash /app/Seq2SecStruc.sh -s
 RUN bash /app/pdb2ProtLigSite.sh -s
 RUN bash /app/msa2coupling.sh -s
 
-RUN python3 -m pip install biopython numpy pandas
+RUN python3 -m pip install biopython numpy pandas  pybiolib
 RUN apt install -y nano
  
 COPY mf.R /app

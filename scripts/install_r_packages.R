@@ -1,6 +1,6 @@
 # this simply installs a set of packages we need
 
-cran_packages = c("Peptides", "FSelector", "protr")
+cran_packages = c("Peptides", "FSelector", "protr", "bio3d")
 for( p  in cran_packages){
     install.packages(p)
 }
