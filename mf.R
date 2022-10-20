@@ -25,6 +25,7 @@ library(FSelector)
 library(protr)
 library(ape)
 library(Biostrings)
+library(bio3d)
 
 #source("R/functions.R")
 
@@ -459,7 +460,26 @@ if(use_pdb){
 
 
 
-#####
+# --------------------  Protein structure, normal mode analysis
+# ref Skjaerven, L. et al. (2014) BMC Bioinformatics 15, 399. Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.
+if(use_pdb){}
+b3d_pdb <- bio3d::read.pdb( pdb_file)
+b3d_modes <- bio3d::nma(b3d_pdb)
+b3d_nma_fluct = b3d_modes$fluctuations
+# t = bio3d::deformation.nma(b3d_modes) # non-trivial to assign value to residue
+# t = bio3d::gnm(b3d_pdb) # # non-trivial to assign value to residue
+t = bio3d::torsion.pdb(b3d_pdb)
+t$alpha # handle NA
+t$omega
+
+t1 = data.frame(loc = 1:nlocs,
+  pdb_md_nma_fluctuations = b3d_nma_fluct,
+  pdb_struc_torson_alpha = t$alpha,
+  pdb_struc_torson_omega = t$omega
+  )
+df = merge(df, t1, by = "loc", all.x = T)
+
+
 
 
 

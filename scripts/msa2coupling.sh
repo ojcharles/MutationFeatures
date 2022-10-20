@@ -65,7 +65,7 @@ else
     echo "Running $program"
     #source ~/envs/metapredict/bin/activate
     mkdir /tmp/seq_evol
-    /tools/plmc/bin/plmc -c ${output} -le 16.0 -lh 0.01 -m 10 -n 16 $input
+    /tools/plmc/bin/plmc -c ${output} -le 16.0 -lh 0.01 -m 10 $input
     echo "complete"
     #deactivate
     else
