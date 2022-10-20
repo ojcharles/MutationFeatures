@@ -32,8 +32,8 @@ RUN apt install -y python3-pymol
 RUN python3 -m pip install -U pybiolib
 
 # R packages
-RUN apt install -y r-cran-stringr r-cran-ggplot2 r-cran-reshape2 r-cran-ggpubr r-cran-tidyr \
-    r-cran-readr r-cran-ape r-cran-bio3d r-cran-biocmanager 
+RUN apt install -y r-cran-stringr r-cran-reshape2 r-cran-ggpubr r-cran-tidyr \
+    r-cran-readr r-cran-ape r-cran-biocmanager 
 RUN R CMD javareconf
 RUN apt install -y curl libcurl4-openssl-dev
 COPY ./scripts/ /app/

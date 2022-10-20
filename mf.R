@@ -354,32 +354,31 @@ if(use_pdb){
     ss <- gsub(" ", "", ss)
     
     ## -------- Building the dataframe ---------------- ##
-    df <- as.data.frame(matrix(c(resnum, respdb, chain, aa,
+    d <- as.data.frame(matrix(c(resnum, respdb, chain, aa,
                                 ss, sasa, phi, psi), ncol = 8),
                         stringsAsFactors = FALSE)
     
-    colnames(df) <- c('pdb_struc_resnum', 'pdb_struc_dssp_respdb',
+    colnames(d) <- c('loc', 'pdb_struc_dssp_respdb',
                       'pdb_struc_dssp_chain', 'pdb_struc_dssp_aa',
                       'pdb_struc_dssp_ss', 'pdb_struc_dssp_asa',
                       'pdb_struc_dssp_phi', 'pdb_struc_dssp_psi')
     
-    df$pdb_struc_dssp_resnum <- as.numeric(df$pdb_struc_dssp_resnum)
-    df$pdb_struc_dssp_respdb <- as.numeric(df$pdb_struc_dssp_respdb)
-    df$pdb_struc_dssp_asa <- as.numeric(df$pdb_struc_dssp_asa)
-    df$pdb_struc_dssp_phi <- as.numeric(df$pdb_struc_dssp_phi)
-    df$pdb_struc_dssp_psi <- as.numeric(df$pdb_struc_dssp_psi)
-    df$pdb_struc_dssp_ss <- as.numeric(df$pdb_struc_dssp_ss)
-    
+    d$loc <- as.numeric(d$loc)
+    d$pdb_struc_dssp_respdb <- as.numeric(d$pdb_struc_dssp_respdb)
+    d$pdb_struc_dssp_asa <- as.numeric(d$pdb_struc_dssp_asa)
+    d$pdb_struc_dssp_phi <- as.numeric(d$pdb_struc_dssp_phi)
+    d$pdb_struc_dssp_psi <- as.numeric(d$pdb_struc_dssp_psi)
+        
     ## --------------- Remove empty lines between chains ------------- ##
     badlines <- c()
-    for (i in 1:nrow(df)){
-      if (df$aa[i] == '!' | df$aa[i] == 'X'){
+    for (i in 1:nrow(d)){
+      if (d$pdb_struc_dssp_aa[i] == '!' | d$pdb_struc_dssp_aa[i] == 'X'){
         badlines <- c(badlines, i)
       }
     }
     if (length(badlines) != 0){
-      df <- df[-badlines,]
-      df$resnum <- 1:nrow(df)
+      d <- d[-badlines,]
+      d$loc <- 1:nrow(d)
     }
     
     ## --------------- ASA -> RSA ------------- ##
@@ -390,16 +389,18 @@ if(use_pdb){
                   'S'=155.0, 'T'=172.0, 'W'=285.0, 'Y'=263.0, 'V'=174.0)
     
     # for each residue, get asa
-    df$rsa = 0.0
-    for(i in 1:nrow(df)){
-      asa = df$asa[i]
-      total_surface_area_for_residue = as.numeric(asa_lookup[which(names(asa_lookup) == df$aa[i])])
-      df$rsa[i] = asa / total_surface_area_for_residue
+    d$pdb_struc_dssp_rsa = 0.0
+    for(i in 1:nrow(d)){
+      asa = d$pdb_struc_dssp_asa[i]
+      total_surface_area_for_residue = as.numeric(asa_lookup[which(names(asa_lookup) == d$pdb_struc_dssp_aa[i])])
+      d$pdb_struc_dssp_rsa[i] = asa / total_surface_area_for_residue
     }
     
-    return(df[,c(1,5,6,7,8,9)])
+    return(d[,c(1,5,6,7,8,9)])
+    
     
   }
+
   dssp_exec = "/root/.local/bin/mkdssp"
   t = readLines(pdb_file)
   missing_header = sum(grepl("HEADER", t)) == 0
@@ -416,7 +417,6 @@ if(use_pdb){
   command = paste0(dssp_exec, " ",pdb_file," --output-format=dssp > ",tdir,"/dssp.txt")
   system(command)
   dssp = parse.dssp( paste0(tdir,"/dssp.txt") )
-  names(dssp)[2:6] = paste0("dssp_",names(dssp)[2:6])
 
   df = merge(df, dssp, by.x = "loc", by.y = "resnum")
 }
