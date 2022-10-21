@@ -233,43 +233,55 @@ df = merge(df, t1, by = "loc", all.x = T)
 
 
 # ------------------------------------------------------------Physiochemical Features
-# wdwradius
+# define a maping of AA -> proterty vector, then just apply
 vdw = read.csv("/mflibs/vdw_radius.csv", skip = 1)
-df$seq_phys_vdw_radius_wt = 0
-df$seq_phys_vdw_radius_mt = 0
-df$seq_phys_vdw_radius_delta = 0
-for(r in 1:nrow(df)){
-  wtAA = df$wt[r]
-  mtAA = df$mt[r]
-  df$seq_phys_vdw_radius_wt = round(vdw[which(vdw$AA == wtAA),2],1)
-  df$seq_phys_vdw_radius_mt = round(vdw[which(vdw$AA == mtAA),2],1)
-  df$seq_phys_vdw_radius_delta[r] = round(abs(vdw[which(vdw$AA == wtAA),2] - vdw[which(vdw$AA == mtAA),2]),1)
+# protscale key features
+seq_phys_bulkiness = read.table("/mflibs/protscale/bulkiness.tsv", header = T)
+seq_phys_recognition_factors = read.table("/mflibs/protscale/recognition_factor.tsv", header = T)
+seq_phys_buried_residues = read.table("/mflibs/protscale/fraction_buried.tsv", header = T)
+seq_evol_relative_mutability = read.table("/mflibs/protscale/relative_mutability.tsv", header = T)
+seq_phys_polarity = read.table("/mflibs/protscale/polarity.tsv", header = T)
+protscale = data.frame(
+  # key protscale
+  AA = seq_phys_bulkiness[,1],
+  seq_phys_bulkiness = as.numeric(seq_phys_bulkiness[,2]),
+  seq_phys_recognition_factors = as.numeric(seq_phys_recognition_factors[,2]),
+  seq_phys_buried_residues = as.numeric(seq_phys_buried_residues[,2]),
+  seq_evol_relative_mutability = as.numeric(seq_evol_relative_mutability[,2]),
+  seq_phys_polarity = as.numeric(seq_phys_polarity[,2]),
+
+  # R protr
+  seq_phys_hydrophobicity = hydrophobicity(seq_phys_bulkiness[,1]),  # hydrophobicity
+  seq_phys_hmoment = hmoment(seq_phys_bulkiness[,1]),                # dydrogen moment
+  seq_phys_isolectric = pI(seq_phys_bulkiness[,1]),                  # isoelectric point
+  seq_phys_molweight = mw(seq_phys_bulkiness[,1]),                   # molecular weight
+  seq_phys_charge = charge(seq_phys_bulkiness[,1]),                  # charge
+
+  # other
+  seq_phys_vdw_radius = vdw[,2]
+)
+newcols = c( paste0(names(protscale[protscale$AA == wtAA,-1]), "_wt"),
+              paste0(names(protscale[protscale$AA == wtAA,-1]), "_mt"),
+              paste0(names(protscale[protscale$AA == wtAA,-1]), "_diff") )
+n_newcols = length(newcols)
+physdat = data.frame(matrix(ncol = n_newcols , nrow = nrow(df)))
+colnames(physdat) = newcols
+for(aa in protscale$AA){
+  physdat[ which(df$wt == aa) , 1:(n_newcols / 3)] = protscale[protscale$AA == aa,-1]
+  physdat[ which(df$mt == aa) , ((n_newcols / 3)+1) : (2*(n_newcols / 3)) ] = protscale[protscale$AA == aa,-1]
 }
-
-
-
-
-
-# dydrogen moment
-df$seq_phys_wt_hydro = hmoment(df$wt)
-df$seq_phys_mt_hydro = hmoment(df$mt)
-df$change_hydro = abs(df$seq_phys_mt_hydro - df$seq_phys_wt_hydro)
-# hydrophobicity
-df$seq_phys_wt_hydrophobicity = hydrophobicity(df$wt)
-df$seq_phys_mt_hydrophobicity = hydrophobicity(df$mt)
-df$change_hydrophobicity = abs(df$seq_phys_mt_hydrophobicity - df$seq_phys_wt_hydrophobicity)
-# isoelectric point
-df$seq_phys_wt_PI = pI(df$wt)
-df$seq_phys_mt_PI = pI(df$mt)
-df$change_PI = df$seq_phys_mt_hydro - df$seq_phys_wt_hydro
-# molweight
-df$seq_phys_wt_mw = mw(df$wt)
-df$seq_phys_mt_mw = mw(df$mt)
-df$change_mw = abs(df$seq_phys_mt_mw - df$seq_phys_wt_mw)
-# charge
-df$seq_phys_wt_charge = charge(df$wt)
-df$seq_phys_mt_charge = charge(df$mt)
-df$change_charge = abs(df$seq_phys_mt_charge - df$seq_phys_wt_charge)
+physdat[ , (2*(n_newcols / 3)) : n_newcols ] = (physdat[ , 1: (n_newcols / 3)]) / (physdat[ , ( (n_newcols / 3)+1) : (2*(n_newcols / 3)) ])
+df = cbind(df,physdat)
+# slowwwwwww
+#for(r in 1:nrow(df)){
+#  print(r)
+#  wtAA = df$wt[r]
+#  mtAA = df$mt[r]
+#  t1 = protscale[protscale$AA == wtAA,-1]
+#  t2 = protscale[protscale$AA == wtAA,-1]
+#  t3 = abs(protscale[protscale$AA == wtAA,-1] - protscale[protscale$AA == mtAA,-1])
+#  physdat[r,] = c(t1,t2,t3)
+#}
 
 
 
@@ -295,6 +307,14 @@ struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
 colnames(struc$seq2SecStruc) = c("loc", "seq_struc_seq2ss_ss",
 "seq_struc_seq2ss_C", "seq_struc_seq2ss_E", "seq_struc_seq2ss_H")
 df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
+
+
+
+
+
+
+
+
 
 
 
@@ -418,7 +438,7 @@ if(use_pdb){
   system(command)
   dssp = parse.dssp( paste0(tdir,"/dssp.txt") )
 
-  df = merge(df, dssp, by.x = "loc", by.y = "resnum")
+  df = merge(df, dssp, by.x = "loc", by.y = "loc")
 }
 
 
