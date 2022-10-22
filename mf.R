@@ -458,9 +458,9 @@ if(use_pdb){
   tfile = list.files("/tmp/p2rank", "*.pdb_residues.csv", full.names = T)
   tdf = read.csv(tfile)
   #residue part of key ligand site? 0 is not, 1 is yes
-  ligand_interracting_locs = tdf[tdf$pocket==1,2]
+  ligand_interracting_locs = tdf[tdf$pocket == 1,2]
   df$ligand_p2rank_best_pocket = 0
-  df[ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
+  df[df$loc == ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
   # generic zscore over all pockets
   tdf2 = tdf[,c(2,5,6)]
   colnames(tdf2) = c("loc", "pdb_ligand_p2rank_zscore", "pdb_ligand_p2rank_prob")
@@ -480,8 +480,8 @@ b3d_nma_fluct = b3d_modes$fluctuations
 # t = bio3d::deformation.nma(b3d_modes) # non-trivial to assign value to residue
 # t = bio3d::gnm(b3d_pdb) # # non-trivial to assign value to residue
 t = bio3d::torsion.pdb(b3d_pdb)
-t$alpha # handle NA
-t$omega
+#t$alpha # handle NA
+#t$omega
 
 t1 = data.frame(loc = 1:nlocs,
   pdb_md_nma_fluctuations = b3d_nma_fluct,
