@@ -234,6 +234,7 @@ df = merge(df, t1, by = "loc", all.x = T)
 
 # ------------------------------------------------------------Physiochemical Features
 # define a maping of AA -> proterty vector, then just apply
+# wt, mt, diff
 vdw = read.csv("/mflibs/vdw_radius.csv", skip = 1)
 # protscale key features
 seq_phys_bulkiness = read.table("/mflibs/protscale/bulkiness.tsv", header = T)
@@ -260,9 +261,9 @@ protscale = data.frame(
   # other
   seq_phys_vdw_radius = vdw[,2]
 )
-newcols = c( paste0(names(protscale[protscale$AA == wtAA,-1]), "_wt"),
-              paste0(names(protscale[protscale$AA == wtAA,-1]), "_mt"),
-              paste0(names(protscale[protscale$AA == wtAA,-1]), "_diff") )
+newcols = c( paste0(names(protscale[1,-1]), "_wt"),
+              paste0(names(protscale[1,-1]), "_mt"),
+              paste0(names(protscale[1,-1]), "_diff") )
 n_newcols = length(newcols)
 physdat = data.frame(matrix(ncol = n_newcols , nrow = nrow(df)))
 colnames(physdat) = newcols
@@ -270,18 +271,8 @@ for(aa in protscale$AA){
   physdat[ which(df$wt == aa) , 1:(n_newcols / 3)] = protscale[protscale$AA == aa,-1]
   physdat[ which(df$mt == aa) , ((n_newcols / 3)+1) : (2*(n_newcols / 3)) ] = protscale[protscale$AA == aa,-1]
 }
-physdat[ , (2*(n_newcols / 3)) : n_newcols ] = (physdat[ , 1: (n_newcols / 3)]) / (physdat[ , ( (n_newcols / 3)+1) : (2*(n_newcols / 3)) ])
+physdat[ , (2*(n_newcols / 3)) : n_newcols ] = (physdat[ , 1: (n_newcols / 3)]) - (physdat[ , ( (n_newcols / 3)+1) : (2*(n_newcols / 3)) ])
 df = cbind(df,physdat)
-# slowwwwwww
-#for(r in 1:nrow(df)){
-#  print(r)
-#  wtAA = df$wt[r]
-#  mtAA = df$mt[r]
-#  t1 = protscale[protscale$AA == wtAA,-1]
-#  t2 = protscale[protscale$AA == wtAA,-1]
-#  t3 = abs(protscale[protscale$AA == wtAA,-1] - protscale[protscale$AA == mtAA,-1])
-#  physdat[r,] = c(t1,t2,t3)
-#}
 
 
 
