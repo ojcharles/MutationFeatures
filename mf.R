@@ -109,6 +109,19 @@ for(r in 1:nrow(df)){
 
 
 
+# get the move ave along a vector, do this before merge by loc
+mav =  function(x, n = 5){
+  x = filter(x, rep(1 / n, n), sides = 2)
+  # fill NA start and end
+  x[ 1 : round(n / 2, 0) ] = x[ round(n / 2, 0) + 1 ]
+  x[ ( length(x) - round(n / 2, 0) + 1 ) : length(x) ] = x[ length(x) -  round(n / 2, 0) ]
+  return(x)
+}
+
+
+
+
+
 # -------------------- princeton conservation
 # ref: https://compbio.cs.princeton.edu/conservation/
 command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mflibs/conservation_code/matrix/blosum62.bla -p FALSE -g 0.99 ",temp_blast_msa," > ",tdir,"/seq_evol_conservation.txt")
@@ -117,6 +130,8 @@ conservation = data.frame(read.table(paste0(tdir,"/seq_evol_conservation.txt"),h
 colnames(conservation) = c("loc", "seq_evol_conservation")
 conservation$seq_evol_conservation = as.numeric(conservation$seq_evol_conservation)
 conservation[conservation$seq_evol_conservation < 0,2] = 0 # handle NA
+conservation$seq_evol_conservation_ma5 = mav(conservation[,2],5)
+conservation$seq_evol_conservation_ma10 = mav(conservation[,2],10)
 df = merge(df, conservation, by = "loc", all.x = T)
 
 
@@ -135,7 +150,9 @@ for(i in 1:ncol(a)){
   psi_depth$seq_evol_psi_depth[i] = round(length(t),0)
   psi_depth$seq_evol_psi_depthnorm[i] = round(length(t) / nrow(a),2)
   psi_depth$seq_evol_psi_unique[i] = length(unique(t))
-  
+  psi_depth$seq_evol_psi_depth_ma5 = mav(psi_depth$seq_evol_psi_depth,5)
+  psi_depth$seq_evol_psi_depthnorm_ma5 = mav(psi_depth$seq_evol_psi_depthnorm,5)
+  psi_depth$seq_evol_psi_unique_ma5 = mav(psi_depth$seq_evol_psi_unique,5) 
 }
 df = merge(df, psi_depth, by = "loc", all.x = T)
 
@@ -214,6 +231,8 @@ df[df$loc > (nlocs - 50),]$seq_struc_proximity50_N_C = 1
 
 
 
+
+
 # sequence diversity measures - from bio3d
 t_msa = bio3d::read.fasta(temp_blast_msa)
 t = bio3d::entropy(t_msa)
@@ -225,7 +244,7 @@ t1 = data.frame(loc = 1:nlocs,
   seq_evol_conservation_bio3d = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "bio3d"),
   seq_evol_conservation_blosum62 = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "blosum62")
   #seq_evol_conservation_pam30 = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "pam30") # fails
-  )
+)
 df = merge(df, t1, by = "loc", all.x = T)
 
 
