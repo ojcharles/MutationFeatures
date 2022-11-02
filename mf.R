@@ -109,6 +109,19 @@ for(r in 1:nrow(df)){
 
 
 
+# get the move ave along a vector, do this before merge by loc
+mav =  function(x, n = 5){
+  x = filter(x, rep(1 / n, n), sides = 2)
+  # fill NA start and end
+  x[ 1 : round(n / 2, 0) ] = x[ round(n / 2, 0) + 1 ]
+  x[ ( length(x) - round(n / 2, 0) + 1 ) : length(x) ] = x[ length(x) -  round(n / 2, 0) ]
+  return(x)
+}
+
+
+
+
+
 # -------------------- princeton conservation
 # ref: https://compbio.cs.princeton.edu/conservation/
 command = paste0("python2 /mflibs/conservation_code/score_conservation.py -m /mflibs/conservation_code/matrix/blosum62.bla -p FALSE -g 0.99 ",temp_blast_msa," > ",tdir,"/seq_evol_conservation.txt")
@@ -117,6 +130,8 @@ conservation = data.frame(read.table(paste0(tdir,"/seq_evol_conservation.txt"),h
 colnames(conservation) = c("loc", "seq_evol_conservation")
 conservation$seq_evol_conservation = as.numeric(conservation$seq_evol_conservation)
 conservation[conservation$seq_evol_conservation < 0,2] = 0 # handle NA
+conservation$seq_evol_conservation_ma5 = mav(conservation[,2],5)
+conservation$seq_evol_conservation_ma10 = mav(conservation[,2],10)
 df = merge(df, conservation, by = "loc", all.x = T)
 
 
@@ -135,7 +150,9 @@ for(i in 1:ncol(a)){
   psi_depth$seq_evol_psi_depth[i] = round(length(t),0)
   psi_depth$seq_evol_psi_depthnorm[i] = round(length(t) / nrow(a),2)
   psi_depth$seq_evol_psi_unique[i] = length(unique(t))
-  
+  psi_depth$seq_evol_psi_depth_ma5 = mav(psi_depth$seq_evol_psi_depth,5)
+  psi_depth$seq_evol_psi_depthnorm_ma5 = mav(psi_depth$seq_evol_psi_depthnorm,5)
+  psi_depth$seq_evol_psi_unique_ma5 = mav(psi_depth$seq_evol_psi_unique,5) 
 }
 df = merge(df, psi_depth, by = "loc", all.x = T)
 
@@ -214,6 +231,8 @@ df[df$loc > (nlocs - 50),]$seq_struc_proximity50_N_C = 1
 
 
 
+
+
 # sequence diversity measures - from bio3d
 t_msa = bio3d::read.fasta(temp_blast_msa)
 t = bio3d::entropy(t_msa)
@@ -225,7 +244,7 @@ t1 = data.frame(loc = 1:nlocs,
   seq_evol_conservation_bio3d = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "bio3d"),
   seq_evol_conservation_blosum62 = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "blosum62")
   #seq_evol_conservation_pam30 = bio3d::conserv(t_msa, method = "similarity", sub.matrix = "pam30") # fails
-  )
+)
 df = merge(df, t1, by = "loc", all.x = T)
 
 
@@ -233,43 +252,46 @@ df = merge(df, t1, by = "loc", all.x = T)
 
 
 # ------------------------------------------------------------Physiochemical Features
-# wdwradius
+# define a maping of AA -> proterty vector, then just apply
+# wt, mt, diff
 vdw = read.csv("/mflibs/vdw_radius.csv", skip = 1)
-df$seq_phys_vdw_radius_wt = 0
-df$seq_phys_vdw_radius_mt = 0
-df$seq_phys_vdw_radius_delta = 0
-for(r in 1:nrow(df)){
-  wtAA = df$wt[r]
-  mtAA = df$mt[r]
-  df$seq_phys_vdw_radius_wt = round(vdw[which(vdw$AA == wtAA),2],1)
-  df$seq_phys_vdw_radius_mt = round(vdw[which(vdw$AA == mtAA),2],1)
-  df$seq_phys_vdw_radius_delta[r] = round(abs(vdw[which(vdw$AA == wtAA),2] - vdw[which(vdw$AA == mtAA),2]),1)
+# protscale key features
+seq_phys_bulkiness = read.table("/mflibs/protscale/bulkiness.tsv", header = T)
+seq_phys_recognition_factors = read.table("/mflibs/protscale/recognition_factor.tsv", header = T)
+seq_phys_buried_residues = read.table("/mflibs/protscale/fraction_buried.tsv", header = T)
+seq_evol_relative_mutability = read.table("/mflibs/protscale/relative_mutability.tsv", header = T)
+seq_phys_polarity = read.table("/mflibs/protscale/polarity.tsv", header = T)
+protscale = data.frame(
+  # key protscale
+  AA = seq_phys_bulkiness[,1],
+  seq_phys_bulkiness = as.numeric(seq_phys_bulkiness[,2]),
+  seq_phys_recognition_factors = as.numeric(seq_phys_recognition_factors[,2]),
+  seq_phys_buried_residues = as.numeric(seq_phys_buried_residues[,2]),
+  seq_evol_relative_mutability = as.numeric(seq_evol_relative_mutability[,2]),
+  seq_phys_polarity = as.numeric(seq_phys_polarity[,2]),
+
+  # R protr
+  seq_phys_hydrophobicity = hydrophobicity(seq_phys_bulkiness[,1]),  # hydrophobicity
+  seq_phys_hmoment = hmoment(seq_phys_bulkiness[,1]),                # dydrogen moment
+  seq_phys_isolectric = pI(seq_phys_bulkiness[,1]),                  # isoelectric point
+  seq_phys_molweight = mw(seq_phys_bulkiness[,1]),                   # molecular weight
+  seq_phys_charge = charge(seq_phys_bulkiness[,1]),                  # charge
+
+  # other
+  seq_phys_vdw_radius = vdw[,2]
+)
+newcols = c( paste0(names(protscale[1,-1]), "_wt"),
+              paste0(names(protscale[1,-1]), "_mt"),
+              paste0(names(protscale[1,-1]), "_diff") )
+n_newcols = length(newcols)
+physdat = data.frame(matrix(ncol = n_newcols , nrow = nrow(df)))
+colnames(physdat) = newcols
+for(aa in protscale$AA){
+  physdat[ which(df$wt == aa) , 1:(n_newcols / 3)] = protscale[protscale$AA == aa,-1]
+  physdat[ which(df$mt == aa) , ((n_newcols / 3)+1) : (2*(n_newcols / 3)) ] = protscale[protscale$AA == aa,-1]
 }
-
-
-
-
-
-# dydrogen moment
-df$seq_phys_wt_hydro = hmoment(df$wt)
-df$seq_phys_mt_hydro = hmoment(df$mt)
-df$change_hydro = abs(df$seq_phys_mt_hydro - df$seq_phys_wt_hydro)
-# hydrophobicity
-df$seq_phys_wt_hydrophobicity = hydrophobicity(df$wt)
-df$seq_phys_mt_hydrophobicity = hydrophobicity(df$mt)
-df$change_hydrophobicity = abs(df$seq_phys_mt_hydrophobicity - df$seq_phys_wt_hydrophobicity)
-# isoelectric point
-df$seq_phys_wt_PI = pI(df$wt)
-df$seq_phys_mt_PI = pI(df$mt)
-df$change_PI = df$seq_phys_mt_hydro - df$seq_phys_wt_hydro
-# molweight
-df$seq_phys_wt_mw = mw(df$wt)
-df$seq_phys_mt_mw = mw(df$mt)
-df$change_mw = abs(df$seq_phys_mt_mw - df$seq_phys_wt_mw)
-# charge
-df$seq_phys_wt_charge = charge(df$wt)
-df$seq_phys_mt_charge = charge(df$mt)
-df$change_charge = abs(df$seq_phys_mt_charge - df$seq_phys_wt_charge)
+physdat[ , (2*(n_newcols / 3)) : n_newcols ] = (physdat[ , 1: (n_newcols / 3)]) - (physdat[ , ( (n_newcols / 3)+1) : (2*(n_newcols / 3)) ])
+df = cbind(df,physdat)
 
 
 
@@ -295,6 +317,14 @@ struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
 colnames(struc$seq2SecStruc) = c("loc", "seq_struc_seq2ss_ss",
 "seq_struc_seq2ss_C", "seq_struc_seq2ss_E", "seq_struc_seq2ss_H")
 df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
+
+
+
+
+
+
+
+
 
 
 
@@ -418,7 +448,7 @@ if(use_pdb){
   system(command)
   dssp = parse.dssp( paste0(tdir,"/dssp.txt") )
 
-  df = merge(df, dssp, by.x = "loc", by.y = "resnum")
+  df = merge(df, dssp, by.x = "loc", by.y = "loc")
 }
 
 
@@ -447,9 +477,9 @@ if(use_pdb){
   tfile = list.files("/tmp/p2rank", "*.pdb_residues.csv", full.names = T)
   tdf = read.csv(tfile)
   #residue part of key ligand site? 0 is not, 1 is yes
-  ligand_interracting_locs = tdf[tdf$pocket==1,2]
+  ligand_interracting_locs = tdf[tdf$pocket == 1,2]
   df$ligand_p2rank_best_pocket = 0
-  df[ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
+  df[df$loc == ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
   # generic zscore over all pockets
   tdf2 = tdf[,c(2,5,6)]
   colnames(tdf2) = c("loc", "pdb_ligand_p2rank_zscore", "pdb_ligand_p2rank_prob")
@@ -469,8 +499,8 @@ b3d_nma_fluct = b3d_modes$fluctuations
 # t = bio3d::deformation.nma(b3d_modes) # non-trivial to assign value to residue
 # t = bio3d::gnm(b3d_pdb) # # non-trivial to assign value to residue
 t = bio3d::torsion.pdb(b3d_pdb)
-t$alpha # handle NA
-t$omega
+#t$alpha # handle NA
+#t$omega
 
 t1 = data.frame(loc = 1:nlocs,
   pdb_md_nma_fluctuations = b3d_nma_fluct,

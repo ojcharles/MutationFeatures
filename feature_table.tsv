@@ -1,0 +1,72 @@
+derived	feature-type	software	process	feature_name	description	reference	container	mf.R
+seq	evolutionary	psiblast	pssm	seq_evol_pssm_wt		blast	Y	Y
+seq	evolutionary	psiblast	pssm	seq_evol_pssm_mt		blast	Y	Y
+seq	evolutionary	psiblast	pssm	seq_evol_pssm_diff		blast	Y	Y
+seq	evolutionary	psiblast	pssm	seq_evol_pssm_mean		blast	Y	Y
+seq	evolutionary	conservation		seq_evol_conservation		https://pubmed.ncbi.nlm.nih.gov/12169533/	Y	Y
+seq	evolutionary	psiblast		seq_evol_psi_depth		blast	Y	Y
+seq	evolutionary	psiblast		seq_evol_psi_unique		blast	Y	Y
+seq	evolutionary	psiblast		seq_evol_psi_depthnorm		blast	Y	Y
+seq	evolutionary	plmc	residue-residue coupling	seq_evol_max_residue_coupling	max	https://github.com/debbiemarkslab/plmc	Y	Y
+seq	evolutionary	plmc	residue-residue coupling	seq_evol_coupling_mean	mean to all	https://github.com/debbiemarkslab/plmc	Y	Y
+seq	evolutionary	plmc	residue-residue coupling	seq_evol_top10th_coupling_mean	mean of 10highest values	https://github.com/debbiemarkslab/plmc	Y	Y
+seq	evolutionary			seq_evol_grantham	wt - mt distance	https://www.science.org/doi/10.1126/science.185.4154.862	Y	Y
+seq	evolutionary			seq_evol_blosum62	wt - mt distance	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC50453/	Y	Y
+seq	structural			seq_struc_proximity50_N_C	is residue within 50 resdues of either terminal end?		Y	Y
+seq	evolutionary	CRAN-bio3d	entropy()$H	seq_evol_SHentropy		CRAN-bio3d	Y	Y
+seq	evolutionary	CRAN-bio3d	entropy()$H.norm	seq_evol_SHentropy_norm		CRAN-bio3d	Y	Y
+seq	evolutionary	CRAN-bio3d	entropy()$H.10	seq_evol_SHentropy10		CRAN-bio3d	Y	Y
+seq	evolutionary	CRAN-bio3d	entropy()$H.10.norm	seq_evol_SHentropy10_norm		CRAN-bio3d	Y	Y
+seq	evolutionary	CRAN-bio3d	conserv(sub.matrix = "bio3d")	seq_evol_conservation_bio3d		CRAN-bio3d	Y	Y
+seq	evolutionary	CRAN-bio3d	conserv(sub.matrix = "blosum62")	seq_evol_conservation_blosum62		CRAN-bio3d	Y	Y
+seq	physiochemical			seq_phys_bulkiness_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physiochemical			seq_phys_recognition_factors_wt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
+seq	physiochemical			seq_phys_buried_residues_wt		Nature 277:491-492(1979).	Y	Y
+seq	evolutionary			seq_evol_relative_mutability_wt		Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).	Y	Y
+seq	physiochemical			seq_phys_polarity_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physiochemical	R::protr		seq_phys_hydrophobicity_wt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_hmoment_wt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_isolectric_wt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_molweight_wt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_charge_wt		R::protr	Y	Y
+seq	physiochemical			seq_phys_vdw_radius_wt		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
+seq	physiochemical			seq_phys_bulkiness_mt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physiochemical			seq_phys_recognition_factors_mt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
+seq	physiochemical			seq_phys_buried_residues_mt		Nature 277:491-492(1979).	Y	Y
+seq	evolutionary			seq_evol_relative_mutability_mt		Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).	Y	Y
+seq	physiochemical			seq_phys_polarity_mt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physiochemical	R::protr		seq_phys_hydrophobicity_mt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_hmoment_mt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_isolectric_mt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_molweight_mt		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_charge_mt		R::protr	Y	Y
+seq	physiochemical			seq_phys_vdw_radius_mt		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
+seq	physiochemical			seq_phys_bulkiness_diff		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physiochemical			seq_phys_recognition_factors_diff		Can. J. Chem. 60:2606-2610(1982).	Y	Y
+seq	physiochemical			seq_phys_buried_residues_diff		Nature 277:491-492(1979).	Y	Y
+seq	evolutionary			seq_evol_relative_mutability_diff		Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).	Y	Y
+seq	physiochemical			seq_phys_polarity_diff		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physiochemical	R::protr		seq_phys_hydrophobicity_diff		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_hmoment_diff		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_isolectric_diff		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_molweight_diff		R::protr	Y	Y
+seq	physiochemical	R::protr		seq_phys_charge_diff		R::protr	Y	Y
+seq	physiochemical			seq_phys_vdw_radius_diff		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
+seq	structural	seq2disorder		seq_struc_disorder	fraction of predictors that have residue as disordered	https://github.com/idptools/metapredict	Y	Y
+seq	structural	seq2disorder		seq_struc_seq2ss_ss	secstruc_best_predicted	https://github.com/psipred/s4pred	Y	Y
+seq	structural	seq2disorder		seq_struc_seq2ss_C		https://github.com/psipred/s4pred	Y	Y
+seq	structural	seq2disorder		seq_struc_seq2ss_E		https://github.com/psipred/s4pred	Y	Y
+seq	structural	seq2disorder		seq_struc_seq2ss_H		https://github.com/psipred/s4pred	Y	Y
+pdb	structural	dssp		pdb_struc_dssp_ss			Y	Y
+pdb	structural	dssp		pdb_struc_dssp_asa	absolute_solvent_accessibility		Y	Y
+pdb	structural	dssp		pdb_struc_dssp_phi	phi_bond_angle		Y	Y
+pdb	structural	dssp		pdb_struc_dssp_psi	psi_bond_angle		Y	Y
+pdb	structural	dssp		pdb_struc_dssp_rsa	relative_solvent_accesibility		Y	Y
+pdb	structural	biopython		pdb_struc_mean_2_closest_residues			Y	Y
+pdb	structural	biopython		pdb_struc_mean_5_closest_residues			Y	Y
+pdb	ligand	p2rank		ligand_p2rank_best_pocket	is_residue_part_of_most_likely_pocket		Y	Y
+pdb	ligand	p2rank		pdb_ligand_p2rank_zscore			Y	Y
+pdb	ligand	p2rank		pdb_ligand_p2rank_prob			Y	Y
+pdb	mol_dynamics	bio3d		pdb_md_nma_fluctuations			Y	Y
+pdb	structural	bio3d		pdb_struc_torson_alpha			Y	Y
+pdb	structural	bio3d		pdb_struc_torson_omega			Y	Y
