@@ -251,6 +251,72 @@ df = merge(df, t1, by = "loc", all.x = T)
 
 
 
+# generate a HMMprofile for the alignment, and return the " -log(emmission_probability)" using HMMER3
+# this simple appends the columns, not by mt or wt
+read_hmmprofile <- function(file){
+  text = readLines(file)
+  
+  start = grep("HMM", text)[2]
+  end = grep("//", text)
+  
+  if(length(start) == 0 || length(end) == 0) {stop("malformed hmm profile")}
+  
+  # parser currently only handles /f formatted .hmm files
+  if( grepl("HMMER3/f", text[1]) ){
+    text = text[start:end]
+    
+    
+    which_emmission = grep(" [0-9]{1,9} ", text)
+    which_transition = which_emmission + 2
+    
+    if(length(start) == 0 || length(end) == 0) {stop("the parser cannot find residue emmission or transition probabilities")}
+    
+    df_emmission = read.table(text = text[which_emmission])[,1:21]
+    df_transition = read.table(text = text[which_transition])
+    
+    df = cbind(df_emmission,
+               df_transition)
+    
+    colnames(df) = c("position",
+                     "A",
+                     "C",
+                     "D",
+                     "E",
+                     "F",
+                     "G",
+                     "H",
+                     "I",
+                     "K",
+                     "L",
+                     "M",
+                     "N",
+                     "P",
+                     "Q",
+                     "R",
+                     "S",
+                     "T",
+                     "V",
+                     "W",
+                     "Y",
+                     "m->m",
+                     "m->i",
+                     "m->d",
+                     "i->m",
+                     "i->i",
+                     "d->m",
+                     "d->d")
+  }
+  
+  return(df)
+}
+system("hmmbuild -n query_hmm  /tmp/psiblast_msa.hmm /tmp/psiblast_msa.fa ")
+d_hmmer = read_hmmprofile("/tmp/psiblast_msa.hmm")
+df = merge(df,d_hmmer[,1:21], by.x = "loc", by.y = "position")
+
+
+
+
+
 # ------------------------------------------------------------Physiochemical Features
 # define a maping of AA -> proterty vector, then just apply
 # wt, mt, diff
