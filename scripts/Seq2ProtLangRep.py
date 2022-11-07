@@ -1,12 +1,16 @@
+# A script to take a protein sequence in FASTA format, and return a protein and per residue embedding
+# usage: python3 Seq2ProtLangRep.py my.fasta
+
 
 ##### setup
-seq_path = "./protT5/example_seqs.fasta"
+model_file_dir="/tools"
+seq_path = model_file_dir+"/protT5/example_seqs.fasta"
 per_residue = True 
-per_residue_path = "./protT5/output/per_residue_embeddings.h5" # where to store the embeddings
+per_residue_path = model_file_dir+"/protT5/output/per_residue_embeddings.h5" # where to store the embeddings
 per_protein = True
-per_protein_path = "./protT5/output/per_protein_embeddings.h5" # where to store the embeddings
+per_protein_path = model_file_dir+"/protT5/output/per_protein_embeddings.h5" # where to store the embeddings
 sec_struct = True
-sec_struct_path = "./protT5/output/ss3_preds.fasta" # file for storing predictions
+sec_struct_path = model_file_dir+"/protT5/output/ss3_preds.fasta" # file for storing predictions
 assert per_protein is True or per_residue is True or sec_struct is True, print(
     "Minimally, you need to active per_residue, per_protein or sec_struct. (or any combination)")
 
@@ -16,10 +20,16 @@ from transformers import T5EncoderModel, T5Tokenizer
 import torch
 import h5py
 import time
+import sys
+import numpy as np
+import os
+os.mkdir("/tmp/natlang")
+
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print("Using {}".format(device))
 
-
+fasta_file = sys.argv[1:]
+output_file_pre = sys.argv[2:]
 
 
 # function
@@ -46,8 +56,6 @@ class ConvNet( torch.nn.Module ):
         self.diso_classifier = torch.nn.Sequential(
                         torch.nn.Conv2d( n_final_in, 2, kernel_size=(7,1), padding=(3,0))
                         )
-        
-
     def forward( self, x):
         # IN: X = (B x L x F); OUT: (B x F x L, 1)
         x = x.permute(0,2,1).unsqueeze(dim=-1) 
@@ -67,7 +75,6 @@ def load_sec_struct_model():
   model = model.eval()
   model = model.to(device)
   print('Loaded sec. struct. model from epoch: {:.1f}'.format(state['epoch']))
-
   return model
 
 
@@ -78,7 +85,6 @@ def get_T5_model():
     model = model.to(device) # move model to GPU
     model = model.eval() # set model to evaluation model
     tokenizer = T5Tokenizer.from_pretrained('Rostlab/prot_t5_xl_half_uniref50-enc', do_lower_case=False)
-
     return model, tokenizer
 
 
@@ -91,7 +97,6 @@ def read_fasta( fasta_path, split_char="!", id_field=0):
         Returns dictionary holding multiple sequences or only single 
         sequence, depending on input file.
     '''
-    
     seqs = dict()
     with open( fasta_path, 'r' ) as fasta_f:
         for line in fasta_f:
@@ -110,8 +115,8 @@ def read_fasta( fasta_path, split_char="!", id_field=0):
     example_id=next(iter(seqs))
     print("Read {} sequences.".format(len(seqs)))
     print("Example:\n{}\n{}".format(example_id,seqs[example_id]))
-
     return seqs
+
 
 #@title Generate embeddings. { display-mode: "form" }
 # Generate embeddings via batch-processing
@@ -122,15 +127,12 @@ def read_fasta( fasta_path, split_char="!", id_field=0):
 # max_batch gives the upper number of sequences per batch
 def get_embeddings( model, tokenizer, seqs, per_residue, per_protein, sec_struct, 
                    max_residues=4000, max_seq_len=1000, max_batch=100 ):
-
     if sec_struct:
       sec_struct_model = load_sec_struct_model()
-
     results = {"residue_embs" : dict(), 
                "protein_embs" : dict(),
                "sec_structs" : dict() 
                }
-
     # sort sequences according to length (reduces unnecessary padding --> speeds up embedding)
     seq_dict   = sorted( seqs.items(), key=lambda kv: len( seqs[kv[0]] ), reverse=True )
     start = time.time()
@@ -140,19 +142,16 @@ def get_embeddings( model, tokenizer, seqs, per_residue, per_protein, sec_struct
         seq_len = len(seq)
         seq = ' '.join(list(seq))
         batch.append((pdb_id,seq,seq_len))
-
         # count residues in current batch and add the last sequence length to
         # avoid that batches with (n_res_batch > max_residues) get processed 
         n_res_batch = sum([ s_len for  _, _, s_len in batch ]) + seq_len 
         if len(batch) >= max_batch or n_res_batch>=max_residues or seq_idx==len(seq_dict) or seq_len>max_seq_len:
             pdb_ids, seqs, seq_lens = zip(*batch)
             batch = list()
-
             # add_special_tokens adds extra token at the end of each sequence
             token_encoding = tokenizer.batch_encode_plus(seqs, add_special_tokens=True, padding="longest")
             input_ids      = torch.tensor(token_encoding['input_ids']).to(device)
             attention_mask = torch.tensor(token_encoding['attention_mask']).to(device)
-            
             try:
                 with torch.no_grad():
                     # returns: ( batch-size x max_seq_len_in_minibatch x embedding_dim )
@@ -160,11 +159,8 @@ def get_embeddings( model, tokenizer, seqs, per_residue, per_protein, sec_struct
             except RuntimeError:
                 print("RuntimeError during embedding for {} (L={})".format(pdb_id, seq_len))
                 continue
-
             if sec_struct: # in case you want to predict secondary structure from embeddings
               d3_Yhat, d8_Yhat, diso_Yhat = sec_struct_model(embedding_repr.last_hidden_state)
-
-
             for batch_idx, identifier in enumerate(pdb_ids): # for each protein in the current mini-batch
                 s_len = seq_lens[batch_idx]
                 # slice off padding --> batch-size x seq_len x embedding_dim  
@@ -176,8 +172,6 @@ def get_embeddings( model, tokenizer, seqs, per_residue, per_protein, sec_struct
                 if per_protein: # apply average-pooling to derive per-protein embeddings (1024-d)
                     protein_emb = emb.mean(dim=0)
                     results["protein_embs"][identifier] = protein_emb.detach().cpu().numpy().squeeze()
-
-
     passed_time=time.time()-start
     avg_time = passed_time/len(results["residue_embs"]) if per_residue else passed_time/len(results["protein_embs"])
     print('\n############# EMBEDDING STATS #############')
@@ -211,4 +205,23 @@ def write_prediction_fasta(predictions, out_path):
   return None
 
 
+
+##### RUN MODEL
+model, tokenizer = get_T5_model()
+seqs = read_fasta( fasta_file )
+
+# Compute embeddings and/or secondary structure predictions
+results = get_embeddings( model, tokenizer, seqs,
+                         per_residue, per_protein, sec_struct)
+
+
+# handle protein embedding
+key = list(results["protein_embs"].keys())[0]
+protein_array = results["protein_embs"][key]
+np.savetxt(output_file_pre+"_protein.csv", protein_array, delimiter=",")
+
+# handle residue embedding
+key = list(results["residue_embs"].keys())[0]
+residue_array = results["residue_embs"][key]
+np.savetxt(output_file_pre+"_residue.csv", residue_array, delimiter=",")
 
