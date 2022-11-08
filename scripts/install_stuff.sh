@@ -16,6 +16,7 @@ cmake --install .
 cd /tools
 git clone https://github.com/PDB-REDO/dssp.git
 cd dssp
+git checkout 1d4c7ac6922ac1c5e8868b3933c73c2f601ae6d8
 mkdir build
 cd build
 cmake ..

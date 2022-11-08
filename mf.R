@@ -162,7 +162,7 @@ df = merge(df, psi_depth, by = "loc", all.x = T)
 
 #--------------------  residue-residue coevolution
 # get loca-locb-coupling
-command = paste0("bash /app/msa2coupling.sh -i=", temp_blast_msa ,
+command = paste0("bash /scripts/msa2coupling.sh -i=", temp_blast_msa ,
   " -o=/tmp/seq_evol_covar_coupling.tab")
 system(command)
 seq_coevol = read.table("/tmp/seq_evol_covar_coupling.tab")[,c(1,3,6)]
@@ -229,6 +229,9 @@ df$seq_struc_proximity50_N_C = 0
 df[df$loc < 50,]$seq_struc_proximity50_N_C = 1
 df[df$loc > (nlocs - 50),]$seq_struc_proximity50_N_C = 1
 
+df$seq_struc_proximity10_N_C = 0
+df[df$loc < 10,]$seq_struc_proximity50_N_C = 1
+df[df$loc > (nlocs - 10),]$seq_struc_proximity50_N_C = 1
 
 
 
@@ -301,7 +304,7 @@ df = cbind(df,physdat)
 struc = list()
 # --------------------  from sequence
 ### disorder
-command = paste0("/app/Seq2Disorder.sh -i=", infasta,
+command = paste0("/scripts/Seq2Disorder.sh -i=", infasta,
   " -o=/tmp/seq2disorder.csv")
 system(command)
 struc$seq2disorder = read.csv("/tmp/seq2disorder.csv")
@@ -310,7 +313,7 @@ struc$seq2disorder$loc = 1:nrow(struc$seq2disorder)
 df = merge(df, struc$seq2disorder, by = "loc", all.x = T)
 
 ### secondary structure
-command = paste0("/app/Seq2SecStruc.sh -i=", infasta,
+command = paste0("/scripts/Seq2SecStruc.sh -i=", infasta,
   " -o=/tmp/seq2ss.csv")
 system(command)
 struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
@@ -457,7 +460,7 @@ if(use_pdb){
 
 # --------------------  Residue clustering, how close are closest [2,5] residues
 if(use_pdb){
-  command = paste0("python3 /app/pdb2ResDistMatrix.py ", pdb_file, " /tmp/pdb_struc_mean_k_closest_residues.csv")
+  command = paste0("python3 /scripts/pdb2ResDistMatrix.py ", pdb_file, " /tmp/pdb_struc_mean_k_closest_residues.csv")
   system(command)
   res_clust = read.csv("/tmp/pdb_struc_mean_k_closest_residues.csv")
   colnames(res_clust) = c("loc","pdb_struc_mean_2_closest_residues","pdb_struc_mean_5_closest_residues")
@@ -490,7 +493,7 @@ if(use_pdb){
 
 
 
-# --------------------  Protein structure, normal mode analysis
+# -------------------- Protein structure, normal mode analysis
 # ref Skjaerven, L. et al. (2014) BMC Bioinformatics 15, 399. Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.
 if(use_pdb){}
 b3d_pdb <- bio3d::read.pdb( pdb_file)
@@ -513,7 +516,22 @@ df = merge(df, t1, by = "loc", all.x = T)
 
 
 
+# -------------------- Protein sequence natural language embedding
+command = paste0("bash /scripts/Seq2ProtLangRep.sh -i=",infasta, " -o=/tmp/natlang/prot5")
+system(command)
 
+# # append protein vector to each residue row
+# t_seq2protlangrep = as.numeric(unlist(read.csv("/tmp/natlang/prot5_protein.csv", header = F)))
+# for( c in 1:length(t_seq2protlangrep) ){
+#   df = cbind(df, rep(t_seq2protlangrep , nrow(df)) )
+# }
+
+# append residue vector to each residue row
+t_seq2residuelangrep = read.csv("/tmp/natlang/prot5_residue.csv", header = F)
+colnames( t_seq2residuelangrep) = paste0("seq2residuelangrep_", 1:ncol(t_seq2residuelangrep))
+t_seq2residuelangrep = cbind( loc = 1:nrow(t_seq2residuelangrep),
+                          t_seq2residuelangrep)
+df = merge(df, t_seq2residuelangrep, by = "loc")
 
 
 

@@ -57,6 +57,7 @@ if [ $setup = 1 ]; then
         cd /tools
         git clone https://github.com/debbiemarkslab/plmc.git
         cd plmc
+        git reset --hard 1a9a1e9228a2177c618c69040ea8cfc2d902d9df # they broke compilation in linux
         make all-openmp
     #fi
     exit 0

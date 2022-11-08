@@ -70,3 +70,4 @@ pdb	ligand	p2rank		pdb_ligand_p2rank_prob			Y	Y
 pdb	mol_dynamics	bio3d		pdb_md_nma_fluctuations			Y	Y
 pdb	structural	bio3d		pdb_struc_torson_alpha			Y	Y
 pdb	structural	bio3d		pdb_struc_torson_omega			Y	Y
+seq embedding   prot5   seq2residuelangrep*1024  Y   Y   https://github.com/sacdallago/bio_embeddings

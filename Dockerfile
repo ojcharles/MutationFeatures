@@ -36,23 +36,24 @@ RUN apt install -y r-cran-stringr r-cran-reshape2 r-cran-ggpubr r-cran-tidyr \
     r-cran-readr r-cran-ape r-cran-devtools r-cran-biocmanager 
 RUN R CMD javareconf
 RUN apt install -y curl libcurl4-openssl-dev
-COPY ./scripts/ /app/
-RUN Rscript /app/install_r_packages.R
-RUN /app/install_stuff.sh
+COPY ./scripts/ /scripts/
+COPY ./lib/ /mflibs/
+RUN Rscript /scripts/install_r_packages.R
+RUN /scripts/install_stuff.sh
 
 
-RUN bash /app/Seq2Disorder.sh -s
-RUN bash /app/Seq2SecStruc.sh -s
-RUN bash /app/pdb2ProtLigSite.sh -s
-RUN bash /app/msa2coupling.sh -s
+RUN bash /scripts/Seq2Disorder.sh -s
+RUN bash /scripts/Seq2SecStruc.sh -s
+RUN bash /scripts/pdb2ProtLigSite.sh -s
+RUN bash /scripts/msa2coupling.sh -s
+RUN bash /scripts/Seq2ProtLangRep.sh -s
 
 RUN python3 -m pip install biopython numpy pandas  pybiolib
 RUN apt install -y nano
  
-COPY mf.R /app
-
+COPY mf.R /scripts
 
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["Rscript /app/mf.R"]
+CMD ["Rscript /scripts/mf.R"]
 
