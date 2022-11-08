@@ -80,8 +80,9 @@ if [ $setup = 1 ]; then
 else
     if [ "${input}" != "NA" ] && [ "${ouput}" != "NA" ]; then
     echo "Running $program"
+    mkdir /tmp/natlang
     source ${py_env_dir}/bin/activate
-    python3 /app/Seq2ProtLangRep.py -i $input -o %output
+    python3 scripts/Seq2ProtLangRep.py -i $input -o %output
     echo "complete"
     deactivate
     else

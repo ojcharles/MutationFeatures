@@ -22,8 +22,6 @@ import h5py
 import time
 import sys
 import numpy as np
-import os
-os.mkdir("/tmp/natlang")
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print("Using {}".format(device))

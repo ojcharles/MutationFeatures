@@ -490,7 +490,7 @@ if(use_pdb){
 
 
 
-# --------------------  Protein structure, normal mode analysis
+# -------------------- Protein structure, normal mode analysis
 # ref Skjaerven, L. et al. (2014) BMC Bioinformatics 15, 399. Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.
 if(use_pdb){}
 b3d_pdb <- bio3d::read.pdb( pdb_file)
@@ -513,7 +513,22 @@ df = merge(df, t1, by = "loc", all.x = T)
 
 
 
+# -------------------- Protein sequence natural language embedding
+command = paste0("/scripts/Seq2ProtLangRep.sh -i=",infasta, " -0=", "/tmp/natlang/prot5_")
+system(command)
 
+# # append protein vector to each residue row
+# t_seq2protlangrep = as.numeric(unlist(read.csv("/tmp/natlang/prot5_protein.csv", header = F)))
+# for( c in 1:length(t_seq2protlangrep) ){
+#   df = cbind(df, rep(t_seq2protlangrep , nrow(df)) )
+# }
+
+# append residue vector to each residue row
+t_seq2residuelangrep = read.csv("/tmp/natlang/prot5_residue.csv", header = F)
+colnames( t_seq2residuelangrep) = paste0("seq2residuelangrep_", 1:ncol(t_seq2residuelangrep))
+t_seq2residuelangrep = cbind( loc = 1:nrow(t_seq2residuelangrep),
+                          t_seq2residuelangrep)
+df = merge(df, t_seq2residuelangrep, by = "loc")
 
 
 
