@@ -50,6 +50,7 @@ RUN bash /scripts/Seq2ProtLangRep.sh -s
 
 RUN python3 -m pip install biopython numpy pandas  pybiolib
 RUN apt install -y nano
+RUN apt install -y hmmer
  
 COPY mf.R /scripts
 
