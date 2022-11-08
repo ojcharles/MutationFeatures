@@ -26,8 +26,8 @@ import numpy as np
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print("Using {}".format(device))
 
-fasta_file = sys.argv[1:]
-output_file_pre = sys.argv[2:]
+fasta_file = sys.argv[1]
+output_file_pre = sys.argv[2]
 
 
 # function
@@ -66,7 +66,7 @@ class ConvNet( torch.nn.Module ):
 
 #@title Load the checkpoint for secondary structure prediction. { display-mode: "form" }
 def load_sec_struct_model():
-  checkpoint_dir="./protT5/sec_struct_checkpoint/secstruct_checkpoint.pt"
+  checkpoint_dir=model_file_dir+"/protT5/sec_struct_checkpoint/secstruct_checkpoint.pt"
   state = torch.load( checkpoint_dir )
   model = ConvNet()
   model.load_state_dict(state['state_dict'])

@@ -71,7 +71,7 @@ if [ $setup = 1 ]; then
         wget -nc -P ${model_file_dir}/protT5/sec_struct_checkpoint http://data.bioembeddings.com/public/embeddings/feature_models/t5/secstruct_checkpoint.pt
         
         # pre download model weights
-        python3 /scripts/Seq2ProtLangRep-prefetch_model
+        python3 /scripts/Seq2ProtLangRep-prefetch_model.py
 
         deactivate
 
@@ -82,7 +82,7 @@ else
     echo "Running $program"
     mkdir /tmp/natlang
     source ${py_env_dir}/bin/activate
-    python3 scripts/Seq2ProtLangRep.py -i $input -o %output
+    python3 scripts/Seq2ProtLangRep.py $input $output
     echo "complete"
     deactivate
     else
