@@ -68,5 +68,5 @@ makeblastdb -in ./db/uniref50.fasta -parse_seqids -dbtype prot
 ```
 
 
-Oscar J charles 2022
+Oscar J Charles 2022
 
