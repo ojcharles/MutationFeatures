@@ -603,7 +603,7 @@ df = merge(df, t_seq2residuelangrep, by = "loc")
 
 
 # ------------------------------------------------------------ output
-write.csv(df, paste0(tdir, "/df.csv"),row.names = F)
+write.csv(df, out_file, row.names = F)
 
 
 
