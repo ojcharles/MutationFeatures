@@ -4,15 +4,12 @@
 
 # -------------------- Setup
 ### runtime vars
-# //todo make pass argument
-infasta = paste0("/query/HCMV_UL54.fasta")
-#v_evals = c("1E-100", "1E-50", "1e-7")
-v_eval = 1e-7
+args = commandArgs(trailingOnly=TRUE)
+infasta = args[1] #"/query/HCMV_UL54.fasta"
+blast_db_name = args[2] # "uniref50.fasta"
+threads = args[3] # 32
+v_eval = args[4] # 1e-7 # psiblast e value
 
-# passed arguments
-# //todo make pass argument
-blast_db_name = "uniref50.fasta"
-threads = 32
 
 library(stringr)
 library(Peptides)
@@ -45,6 +42,9 @@ colnames(df) = c("loc", "wt", "mt")
 ##### is there a PDB?
 pdb_file = gsub(".fasta", ".pdb", infasta )
 use_pdb = file.exists(pdb_file)
+
+# outfile
+out_file = gsub(".fasta", "_MF.csv", infasta )
 
 
 

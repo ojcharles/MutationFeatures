@@ -3,4 +3,4 @@ temp/
 *.sif
 db/
 t/
-query/t/
+query/
