@@ -1,48 +1,12 @@
-type    tool-process    installed   incorporated    ref
-seq_evol  pssm-uniref50   Y   Y   blast
-seq_evol  msa_depth_psi   Y   Y   blast
-seq_evol  conservation    Y   Y   https://pubmed.ncbi.nlm.nih.gov/12169533/
-seq_evol    wt_mt_grantham  Y   Y   https://www.science.org/doi/10.1126/science.185.4154.862
-seq_evol    wt_mt_blosum62  Y   Y   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC50453/
-seq_evol    max_res_cc  y   Y   https://github.com/debbiemarkslab/plmc
-seq_evol  shannon_entropy  Y  Y CRAN-bio3d
-seq_evol  conservation  Y  Y CRAN-bio3d
-seq_phys    vdwradius_delta Y   y   https://pubmed.ncbi.nlm.nih.gov/8441810/
-seq_phys    hydromoment     Y   y
-seq_phys    hydrophobicity   y   Y
-seq_phys    PI  Y   Y
-seq_phys    molweight   y   y
-seq_phys    charge  Y   Y
-seq_struc   seq2disorder    Y   y   https://github.com/idptools/metapredict
-seq_struc   seq2secstruc    Y   y   https://github.com/psipred/s4pred
-seq_struc proximity_N_C  Y Y
-pdb_struc   dssp_ss    y   Y    https://github.com/PDB-REDO/dssp.git
-pdb_struc   dssp_asa    y   Y   https://github.com/PDB-REDO/dssp.git
-pdb_struc   dssp_phi    y   Y   https://github.com/PDB-REDO/dssp.git
-pdb_struc   dssp_psi    y   Y   https://github.com/PDB-REDO/dssp.git
-pdb_struc   dssp_rsa    y   Y   https://github.com/PDB-REDO/dssp.git
-pdb_struc   pdb2resdist Y   n   ./scripts/.py
-pdb_pocket  p2rank  Y   y   https://github.com/rdk/p2rank
-pdb_md  bio3d::nma  Y Y http://thegrantlab.org/bio3d/reference/nma.html
-pdb_struc bio3d_torsion Y Y http://thegrantlab.org/bio3d/index.html
-seq_evol    relative_mutability Y   Y    Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).
-seq_phys    bulkiness Y Y J. Theor. Biol. 21:170-201(1968).
-seq_phys    recognition_factors Y Y    Can. J. Chem. 60:2606-2610(1982).
-seq_phys    buried_residues Y Y    Nature 277:491-492(1979).
-seq_phys    polarity    Y   Y   J. Theor. Biol. 21:170-201(1968).
-
-
-
-
-
 ###### Features to potentially add, and those already ignored
 
 
 ### High priority
- - https://github.com/sacdallago/bio_embeddings
- - HMMER emmission probabilities of each residue at each position
- -   for each column get the mean of teh physiochemical features along that residue vector as in  # https://link.springer.com/article/10.1186/1471-2164-10-S1-S1
- netsurfp3 - webserver is fast https://dtu.biolib.com/NetSurfP-3/
+super secondary
+
+moving average sequence conservation 2,5,10,20 res up and down
+
+
 
 
 
@@ -64,7 +28,8 @@ https://bitbucket.org/clami66/rawmsa/src/master/ - this looks poorly supported
 
 
 ### to check
-
+    - check again DDG foldx is one but there are others on github , https://github.com/chaconlab/korpm
+    - protein structure fragments, requires all are pre-computed, i.e. each protein considered as a group of structures.  https://turtletools.github.io/geometricus/getting_started.html#Generating-an-Embedding-from-Structural-Fragments
 
 
 ##### similar tools - look at feature space
@@ -83,10 +48,24 @@ https://bitbucket.org/clami66/rawmsa/src/master/ - this looks poorly supported
 
 
 
+##### potential improved features on those already implemented
+Deep embedding - we use https://github.com/sacdallago/bio_embeddings
+    - one that works     https://github.com/agemagician/ProtTrans/blob/master/Embedding/PyTorch/Advanced/ProtBert-BFD.ipynb
+    - ok so this will be impossible to do for each possible mutation, instead just calculate er wt residue
+    - esm also   https://github.com/facebookresearch/esm
+ -   for each column get the mean of the physiochemical features along that residue vector as in  # https://link.springer.com/article/10.1186/1471-2164-10-S1-S1
+ netsurfp3 - webserver is fast https://dtu.biolib.com/NetSurfP-3/
+
+
+
 ##### when we implement a subset pipeline - there wll be very expensive things to do, can't do it on 40,000 things.
 https://academic.oup.com/bioinformatics/article/32/19/2936/2196551
 https://github.com/yfCuiFaith/DeepCSeqSite - would require retraining
 
+
+
+####### more compute heavy calculation to use when provided  alsit of mutations
+-   https://prost.erc.monash.edu/seq/usage.html
 
 
 ###### ignore for reasons
@@ -101,4 +80,3 @@ https://github.com/yfCuiFaith/DeepCSeqSite - would require retraining
  - https://mizuguchilab.org/joy/ # effortful licensing
  - tools by DJ http://bioinf.cs.ucl.ac.uk/psipred/ # nothing new, perhaps some small iteration
  - https://github.com/allydunham/deepscanscape  - deep mutational scannign is a lab based experiment, this is just the data analysis
- 
