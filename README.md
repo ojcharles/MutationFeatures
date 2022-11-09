@@ -7,21 +7,21 @@ Deriving tabular form features for each possible mutation in a protein.
 
 ## Description
 
-A container that takes a protein sequence [.fasta] (and optionally also a [.pdb] file), iterates through all possible amino acid mutations from this wild-type strain, and returns a large number of columns represeting various descriptions of those mutations.
+A container that takes a protein sequence [.fasta] (and optionally also a structure [.pdb]). Then returns a table with rows representing each possible AA mutation, and columns representing descriptions of those mutations.
 
-The idea is that this will be a useful tool for those looking to find patterns that distinguish resistance or disease causing mutations for example from the bulk of other mutations.
+The idea is that this will be a useful tool for those looking to find patterns that distinguish resistance or disease causing mutations.
 
 
 Features include:
 
- - Evolutionary: PSSM, conservation,
- - Structural: Disorder, solvent accesibility, secondary structure
- - Physiochemical: Change in charge, hydrophilicity, VDW's radius
- - Ligand: Probability residue is in a pocket, is the residue contacting the msot likely drug pocket.
+ - Evolutionary: PSSM_wild_type, PSSM_mutant_type, site_conservation
+ - Structural: Disorder, solvent accessibility, secondary structure
+ - Physicochemical: Change in charge, hydrophobicity, VDW radius
+ - Ligand: Probability residue is in a pocket, is the residue contacting the most likely drug pocket.
  - Language embedding of residue: Prot5
 
 
-When provided only a sequence, only predicted strucrual features are generated.
+When provided only a sequence, only predicted structural features are generated.
 
 When provided both a sequence and a pdb file, structural features derived from the structure will be appended (all residues required to be resolved) .
 
@@ -40,11 +40,11 @@ podman build . -t mf
 
 To run the program you need a few things:
 
- - A blast database to mount in the container, we currently require uniref50. This can be generated from the downlaoded fasta with 
+ - A blast database to mount in the container, we currently require uniref50. This can be generated from the downloaded FASTA with 
  - Drop a file say `my.fasta` in ./query, and optionally a file with the same basename such as `my.pdb` too. Then run the following commands.
  - a folder ./temp
  
-The resultant csv file will be depositied in the same directory as your query fasta file
+The resultant csv file will be deposited in the same directory as your query FASTA file
 ```
 podman run -e NVIDIA_VISIBLE_DEVICES=1 --rm -it --name mf \
     -v ./db:/db \

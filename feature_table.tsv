@@ -19,39 +19,39 @@ seq	evolutionary	CRAN-bio3d	entropy()$H.10	seq_evol_SHentropy10		CRAN-bio3d	Y	Y
 seq	evolutionary	CRAN-bio3d	entropy()$H.10.norm	seq_evol_SHentropy10_norm		CRAN-bio3d	Y	Y
 seq	evolutionary	CRAN-bio3d	conserv(sub.matrix = "bio3d")	seq_evol_conservation_bio3d		CRAN-bio3d	Y	Y
 seq	evolutionary	CRAN-bio3d	conserv(sub.matrix = "blosum62")	seq_evol_conservation_blosum62		CRAN-bio3d	Y	Y
-seq	physiochemical			seq_phys_bulkiness_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
-seq	physiochemical			seq_phys_recognition_factors_wt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
-seq	physiochemical			seq_phys_buried_residues_wt		Nature 277:491-492(1979).	Y	Y
+seq	physicochemical			seq_phys_bulkiness_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physicochemical			seq_phys_recognition_factors_wt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
+seq	physicochemical			seq_phys_buried_residues_wt		Nature 277:491-492(1979).	Y	Y
 seq	evolutionary			seq_evol_relative_mutability_wt		Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).	Y	Y
-seq	physiochemical			seq_phys_polarity_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
-seq	physiochemical	R::protr		seq_phys_hydrophobicity_wt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_hmoment_wt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_isolectric_wt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_molweight_wt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_charge_wt		R::protr	Y	Y
-seq	physiochemical			seq_phys_vdw_radius_wt		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
-seq	physiochemical			seq_phys_bulkiness_mt		J. Theor. Biol. 21:170-201(1968).	Y	Y
-seq	physiochemical			seq_phys_recognition_factors_mt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
-seq	physiochemical			seq_phys_buried_residues_mt		Nature 277:491-492(1979).	Y	Y
+seq	physicochemical			seq_phys_polarity_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physicochemical	R::protr		seq_phys_hydrophobicity_wt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_hmoment_wt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_isolectric_wt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_molweight_wt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_charge_wt		R::protr	Y	Y
+seq	physicochemical			seq_phys_vdw_radius_wt		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
+seq	physicochemical			seq_phys_bulkiness_mt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physicochemical			seq_phys_recognition_factors_mt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
+seq	physicochemical			seq_phys_buried_residues_mt		Nature 277:491-492(1979).	Y	Y
 seq	evolutionary			seq_evol_relative_mutability_mt		Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).	Y	Y
-seq	physiochemical			seq_phys_polarity_mt		J. Theor. Biol. 21:170-201(1968).	Y	Y
-seq	physiochemical	R::protr		seq_phys_hydrophobicity_mt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_hmoment_mt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_isolectric_mt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_molweight_mt		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_charge_mt		R::protr	Y	Y
-seq	physiochemical			seq_phys_vdw_radius_mt		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
-seq	physiochemical			seq_phys_bulkiness_diff		J. Theor. Biol. 21:170-201(1968).	Y	Y
-seq	physiochemical			seq_phys_recognition_factors_diff		Can. J. Chem. 60:2606-2610(1982).	Y	Y
-seq	physiochemical			seq_phys_buried_residues_diff		Nature 277:491-492(1979).	Y	Y
+seq	physicochemical			seq_phys_polarity_mt		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physicochemical	R::protr		seq_phys_hydrophobicity_mt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_hmoment_mt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_isolectric_mt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_molweight_mt		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_charge_mt		R::protr	Y	Y
+seq	physicochemical			seq_phys_vdw_radius_mt		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
+seq	physicochemical			seq_phys_bulkiness_diff		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physicochemical			seq_phys_recognition_factors_diff		Can. J. Chem. 60:2606-2610(1982).	Y	Y
+seq	physicochemical			seq_phys_buried_residues_diff		Nature 277:491-492(1979).	Y	Y
 seq	evolutionary			seq_evol_relative_mutability_diff		Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (1978).	Y	Y
-seq	physiochemical			seq_phys_polarity_diff		J. Theor. Biol. 21:170-201(1968).	Y	Y
-seq	physiochemical	R::protr		seq_phys_hydrophobicity_diff		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_hmoment_diff		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_isolectric_diff		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_molweight_diff		R::protr	Y	Y
-seq	physiochemical	R::protr		seq_phys_charge_diff		R::protr	Y	Y
-seq	physiochemical			seq_phys_vdw_radius_diff		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
+seq	physicochemical			seq_phys_polarity_diff		J. Theor. Biol. 21:170-201(1968).	Y	Y
+seq	physicochemical	R::protr		seq_phys_hydrophobicity_diff		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_hmoment_diff		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_isolectric_diff		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_molweight_diff		R::protr	Y	Y
+seq	physicochemical	R::protr		seq_phys_charge_diff		R::protr	Y	Y
+seq	physicochemical			seq_phys_vdw_radius_diff		https://pubmed.ncbi.nlm.nih.gov/8441810/	Y	Y
 seq	structural	seq2disorder		seq_struc_disorder	fraction of predictors that have residue as disordered	https://github.com/idptools/metapredict	Y	Y
 seq	structural	seq2disorder		seq_struc_seq2ss_ss	secstruc_best_predicted	https://github.com/psipred/s4pred	Y	Y
 seq	structural	seq2disorder		seq_struc_seq2ss_C		https://github.com/psipred/s4pred	Y	Y

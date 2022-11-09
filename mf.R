@@ -320,7 +320,7 @@ df = merge(df,d_hmmer[,1:21], by.x = "loc", by.y = "position")
 
 
 
-# ------------------------------------------------------------Physiochemical Features
+# ------------------------------------------------------------physicochemical Features
 # define a maping of AA -> proterty vector, then just apply
 # wt, mt, diff
 vdw = read.csv("/mflibs/vdw_radius.csv", skip = 1)
