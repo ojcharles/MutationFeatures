@@ -43,7 +43,7 @@ https://bitbucket.org/clami66/rawmsa/src/master/ - this looks poorly supported
 
 ##### ideas
 # what about a 3d voxel from the middle of each residue, where we generate an autoencoder?   https://iwatobipen.wordpress.com/2018/02/03/get-3d-feature-descriptors-from-pdb-file/    - prosite http://archive.simtk.org/wtorng/FSCNN_models/PROSITE/
-# physiochemical moving average 3 and 5 residues?
+# physicochemical moving average 3 and 5 residues?
 # pfam or similar to idetify functional residues - pfam https://www.biostars.org/p/214726/
 
 
@@ -53,7 +53,7 @@ Deep embedding - we use https://github.com/sacdallago/bio_embeddings
     - one that works     https://github.com/agemagician/ProtTrans/blob/master/Embedding/PyTorch/Advanced/ProtBert-BFD.ipynb
     - ok so this will be impossible to do for each possible mutation, instead just calculate er wt residue
     - esm also   https://github.com/facebookresearch/esm
- -   for each column get the mean of the physiochemical features along that residue vector as in  # https://link.springer.com/article/10.1186/1471-2164-10-S1-S1
+ -   for each column get the mean of the physicochemical features along that residue vector as in  # https://link.springer.com/article/10.1186/1471-2164-10-S1-S1
  netsurfp3 - webserver is fast https://dtu.biolib.com/NetSurfP-3/
 
 
