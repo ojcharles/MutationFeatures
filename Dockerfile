@@ -55,6 +55,6 @@ RUN apt install -y hmmer
 COPY mf.R /scripts
 
 
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["Rscript /scripts/mf.R"]
+#ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["/bin/bash"]
 

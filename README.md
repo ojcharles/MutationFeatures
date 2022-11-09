@@ -42,15 +42,17 @@ To run the program you need a few things:
 
  - A blast database to mount in the container, we currently require uniref50. This can be generated from the downlaoded fasta with 
  - Drop a file say `my.fasta` in ./query, and optionally a file with the same basename such as `my.pdb` too. Then run the following commands.
+ - a folder ./temp
  
-The resultant df.csv containing your feature space will be deposited in ./temp
+The resultant csv file will be depositied in the same directory as your query fasta file
 ```
-mkdir ./temp
-podman run --rm -it --name mf \
+podman run -e NVIDIA_VISIBLE_DEVICES=1 --rm -it --name mf \
     -v ./db:/db \
+    -v ./lib:/mflibs \
     -v ./query:/query \
     -v ./temp:/tmp \
-    mf
+    mf /bin/bash \
+    -c "Rscript /scripts/mf.R /query/my.fasta uniref50.fasta 32 1e-7" # query_fasta blast_db_name threads psiblast_eval
 ```
 
 
@@ -66,5 +68,5 @@ makeblastdb -in ./db/uniref50.fasta -parse_seqids -dbtype prot
 ```
 
 
-Oscar J charles 2022
+Oscar J Charles 2022
 
