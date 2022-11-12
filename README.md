@@ -2,7 +2,7 @@
 
 Deriving tabular form features for each possible mutation in a protein.
 
-<img src="./figure.svg">
+<img src="./figure_upd.png">
 
 
 ## Description
