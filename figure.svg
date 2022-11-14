@@ -3,8 +3,8 @@
 
 <svg
    width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   height="160mm"
+   viewBox="0 0 210 160"
    version="1.1"
    id="svg5"
    inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
@@ -24,17 +24,18 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.5554293"
-     inkscape:cx="371.28014"
-     inkscape:cy="297.98847"
+     inkscape:zoom="0.77771465"
+     inkscape:cx="-234.019"
+     inkscape:cy="536.82929"
      inkscape:window-width="2560"
      inkscape:window-height="1361"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g27"
+     inkscape:current-layer="layer1"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     height="100mm">
     <sodipodi:guide
        position="-144.81838,212.08158"
        orientation="1,0"
@@ -145,7 +146,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath99">
       <path
-         d="M 0,0 V 0 0 Z"
+         d="M 0,0 Z"
          id="path97" />
     </clipPath>
     <mask
@@ -215,7 +216,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath137">
       <path
-         d="M 0,0 V 0 0 Z"
+         d="M 0,0 Z"
          id="path135" />
     </clipPath>
     <mask
@@ -377,7 +378,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath7851">
       <path
-         d="M 0,0 V 0 0 Z"
+         d="M 0,0 Z"
          id="path7849" />
     </clipPath>
     <mask
@@ -447,7 +448,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath7889">
       <path
-         d="M 0,0 V 0 0 Z"
+         d="M 0,0 Z"
          id="path7887" />
     </clipPath>
     <mask
@@ -644,7 +645,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath7851-4">
       <path
-         d="M 0,0 V 0 Z"
+         d="M 0,0 Z"
          id="path7849-5" />
     </clipPath>
     <clipPath
@@ -714,7 +715,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath7889-1">
       <path
-         d="M 0,0 V 0 Z"
+         d="M 0,0 Z"
          id="path7887-7" />
     </clipPath>
     <clipPath
@@ -869,7 +870,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath7851-3">
       <path
-         d="M 0,0 V 0 Z"
+         d="M 0,0 Z"
          id="path7849-53" />
     </clipPath>
     <clipPath
@@ -939,7 +940,7 @@
        clipPathUnits="userSpaceOnUse"
        id="clipPath7889-7">
       <path
-         d="M 0,0 V 0 Z"
+         d="M 0,0 Z"
          id="path7887-8" />
     </clipPath>
     <clipPath
@@ -1654,13 +1655,13 @@
          id="text49901-4-2-9-7"><tspan
            x="242.62538"
            y="-539.77173"
-           id="tspan220122">Mutation
+           id="tspan223833">Mutation
 </tspan><tspan
            x="242.62538"
            y="-519.77173"
-           id="tspan220124"> features<tspan
+           id="tspan223835"> features<tspan
    y="-519.77173"
-   id="tspan220126"> </tspan></tspan></text>
+   id="tspan223837"> </tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-size:16px;line-height:1.17;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#bbbbbc;fill-opacity:1"
@@ -1694,17 +1695,17 @@
            style="font-size:16px">E2F</tspan><tspan
            sodipodi:role="line"
            x="167.83316"
-           y="-389.60471"
+           y="-389.60468"
            id="tspan124662"
            style="font-size:16px">E2G</tspan><tspan
            sodipodi:role="line"
            x="167.83316"
-           y="-370.8847"
+           y="-370.88467"
            id="tspan124664"
            style="font-size:16px">E2H</tspan><tspan
            sodipodi:role="line"
            x="167.83316"
-           y="-352.1647"
+           y="-352.16467"
            id="tspan124666"
            style="font-size:16px">E2I</tspan><tspan
            sodipodi:role="line"
