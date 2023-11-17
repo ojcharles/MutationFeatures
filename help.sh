@@ -1,6 +1,6 @@
 ############### PODMAN
 # build image
-podman build . -t mf
+podman build . -t mf 
 
 # run in bash, and mount the blast db files
 podman run --rm -it --entrypoint bash  --name mf \
@@ -11,16 +11,25 @@ podman run --rm -it --entrypoint bash  --name mf \
     mf
 
 
+R
+infasta = "/query/HCMV_UL97.fasta"
+blast_db_name =  "uniref50.fasta"
+threads = 4
+v_eval = 1e-7 
+
+
 # run actually
-podman run --rm -it --name mf \
+podman run -e NVIDIA_VISIBLE_DEVICES=1 --rm -it --name mf \
     -v ./db:/db \
     -v ./lib:/mflibs \
     -v ./query:/query \
     -v ./temp:/tmp \
-    mf
-# the query could be a string that is apssed as a cmdline arg also
+    mf /bin/bash \
+    -c "Rscript /scripts/mf.R /query/HCMV_UL97.fasta uniref50.fasta 4 1e-7"
 
 
 
 
-makeblastdb -in db/uniref50_virus.fasta -parse_seqids -dbtype prot
+
+
+makeblastdb -in db/uniref50.fasta -parse_seqids -dbtype prot

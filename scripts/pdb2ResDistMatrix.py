@@ -17,7 +17,7 @@ def calc_residue_dist(residue_one, residue_two) :
 
 def calc_dist_matrix(chain_one, chain_two) :
     """Returns a matrix of C-alpha distances between two chains"""
-    answer = np.zeros((len(chain_one), len(chain_two)), np.float)
+    answer = np.zeros((len(chain_one), len(chain_two)), float)
     for row, residue_one in enumerate(chain_one) :
         for col, residue_two in enumerate(chain_two) :
             answer[row, col] = calc_residue_dist(residue_one, residue_two)

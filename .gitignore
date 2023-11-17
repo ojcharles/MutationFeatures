@@ -4,3 +4,5 @@ temp/
 db/
 t/
 query/
+lib/
+test/

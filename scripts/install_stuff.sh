@@ -13,20 +13,24 @@ cmake ..
 cmake --build . --config Release
 cmake --install .
 
+
+cd /tools
+git clone https://github.com/mhekkel/libmcfp.git
+cd libmcfp
+mkdir build
+cd build
+cmake ..
+cmake --build .
+cmake --install .
+
+
 cd /tools
 git clone https://github.com/PDB-REDO/dssp.git
 cd dssp
-git checkout 1d4c7ac6922ac1c5e8868b3933c73c2f601ae6d8
 mkdir build
 cd build
 cmake ..
 cmake --build . --config Release
 cmake --install .
 
-
-##### p2rank
-cd /tools
-wget https://github.com/rdk/p2rank/releases/download/2.4/p2rank_2.4.tar.gz
-gunzip p2rank_2.4.tar.gz
-tar -xvf p2rank_2.4.tar
 

@@ -205,7 +205,6 @@ for(i in 1:nrow(grantham)){
 
 
 
-
 #blossum
 data(AABLOSUM62)
 blosum = data.frame(AABLOSUM62)
@@ -232,6 +231,7 @@ df[df$loc > (nlocs - 50),]$seq_struc_proximity50_N_C = 1
 df$seq_struc_proximity10_N_C = 0
 df[df$loc < 10,]$seq_struc_proximity50_N_C = 1
 df[df$loc > (nlocs - 10),]$seq_struc_proximity50_N_C = 1
+
 
 
 
@@ -312,10 +312,34 @@ read_hmmprofile <- function(file){
   
   return(df)
 }
-system("hmmbuild -n query_hmm  /tmp/psiblast_msa.hmm /tmp/psiblast_msa.fa ")
+system("hmmbuild -n query_hmm  --symfrac 0 /tmp/psiblast_msa.hmm /tmp/psiblast_msa.fa ")
 d_hmmer = read_hmmprofile("/tmp/psiblast_msa.hmm")
-df = merge(df,d_hmmer[,1:21], by.x = "loc", by.y = "position")
+colnames(d_hmmer) = paste0("seq_evol_HmmEmmProb_", colnames(d_hmmer) )
+df = merge(df,d_hmmer[,1:21], by.x = "loc", by.y = "seq_evol_HmmEmmProb_position")
 
+
+
+
+
+# residues in Pfam domain - binary boolean
+command = paste0("/scripts/Seq2PfamResidues.sh -i=", infasta, " -o=/tmp/pfam_domains.out")
+system(command)
+# read in key line from table
+text = readLines("/tmp/pfam_domains.out")
+# if no hits
+if(length(text) <= 13){
+    pfam_from = 0
+    pfam_to = 0
+}else{
+    # else hit found - only care about best
+    text = text[c(2,4)]
+    t_pfam = read.table(text = text)[,]
+    pfam_from = as.numeric(t_pfam[1,20])
+    pfam_to = as.numeric(t_pfam[1,21])
+    rm(t_pfam)
+}
+df$seq_evol_pfam_domain = 0
+df[df$loc %in% pfam_from:pfam_to,]$seq_evol_pfam_domain = 1
 
 
 
@@ -367,33 +391,27 @@ df = cbind(df,physdat)
 
 
 # ------------------------------------------------------------ Structural features
-struc = list()
-# --------------------  from sequence
-### disorder
-command = paste0("/scripts/Seq2Disorder.sh -i=", infasta,
-  " -o=/tmp/seq2disorder.csv")
-system(command)
-struc$seq2disorder = read.csv("/tmp/seq2disorder.csv")
-colnames(struc$seq2disorder) = c("seq_struc_disorder")
-struc$seq2disorder$loc = 1:nrow(struc$seq2disorder)
-df = merge(df, struc$seq2disorder, by = "loc", all.x = T)
+if(1 == 2){
+  struc = list()
+  # --------------------  from sequence
+  ### disorder
+  command = paste0("/scripts/Seq2Disorder.sh -i=", infasta,
+    " -o=/tmp/seq2disorder.csv")
+  system(command)
+  struc$seq2disorder = read.csv("/tmp/seq2disorder.csv")
+  colnames(struc$seq2disorder) = c("seq_struc_disorder")
+  struc$seq2disorder$loc = 1:nrow(struc$seq2disorder)
+  df = merge(df, struc$seq2disorder, by = "loc", all.x = T)
 
-### secondary structure
-command = paste0("/scripts/Seq2SecStruc.sh -i=", infasta,
-  " -o=/tmp/seq2ss.csv")
-system(command)
-struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
-colnames(struc$seq2SecStruc) = c("loc", "seq_struc_seq2ss_ss",
-"seq_struc_seq2ss_C", "seq_struc_seq2ss_E", "seq_struc_seq2ss_H")
-df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
-
-
-
-
-
-
-
-
+  ### secondary structure
+  command = paste0("/scripts/Seq2SecStruc.sh -i=", infasta,
+    " -o=/tmp/seq2ss.csv")
+  system(command)
+  struc$seq2SecStruc = read.csv("/tmp/seq2ss.csv")[,c(1,3,4,5,6)]
+  colnames(struc$seq2SecStruc) = c("loc", "seq_struc_seq2ss_ss",
+  "seq_struc_seq2ss_C", "seq_struc_seq2ss_E", "seq_struc_seq2ss_H")
+  df = merge(df, struc$seq2SecStruc, by = "loc", all.x = T)
+}
 
 
 
@@ -496,11 +514,9 @@ if(use_pdb){
     }
     
     return(d[,c(1,5,6,7,8,9)])
-    
-    
   }
 
-  dssp_exec = "/root/.local/bin/mkdssp"
+  dssp_exec = "/usr/local/bin/mkdssp"
   t = readLines(pdb_file)
   missing_header = sum(grepl("HEADER", t)) == 0
   missing_cryst1 = sum(grepl("CRYST1", t)) == 0
@@ -548,7 +564,7 @@ if(use_pdb){
   #residue part of key ligand site? 0 is not, 1 is yes
   ligand_interracting_locs = tdf[tdf$pocket == 1,2]
   df$ligand_p2rank_best_pocket = 0
-  df[df$loc == ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
+  df[df$loc %in% ligand_interracting_locs,]$ligand_p2rank_best_pocket = 1
   # generic zscore over all pockets
   tdf2 = tdf[,c(2,5,6)]
   colnames(tdf2) = c("loc", "pdb_ligand_p2rank_zscore", "pdb_ligand_p2rank_prob")
@@ -561,51 +577,53 @@ if(use_pdb){
 
 # -------------------- Protein structure, normal mode analysis
 # ref Skjaerven, L. et al. (2014) BMC Bioinformatics 15, 399. Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.
-if(use_pdb){}
-b3d_pdb <- bio3d::read.pdb( pdb_file)
-b3d_modes <- bio3d::nma(b3d_pdb)
-b3d_nma_fluct = b3d_modes$fluctuations
-# t = bio3d::deformation.nma(b3d_modes) # non-trivial to assign value to residue
-# t = bio3d::gnm(b3d_pdb) # # non-trivial to assign value to residue
-t = bio3d::torsion.pdb(b3d_pdb)
-#t$alpha # handle NA
-#t$omega
+if(use_pdb){
+  b3d_pdb <- bio3d::read.pdb( pdb_file)
+  b3d_modes <- bio3d::nma(b3d_pdb)
+  b3d_nma_fluct = b3d_modes$fluctuations
+  # t = bio3d::deformation.nma(b3d_modes) # non-trivial to assign value to residue
+  # t = bio3d::gnm(b3d_pdb) # # non-trivial to assign value to residue
+  t = bio3d::torsion.pdb(b3d_pdb)
+  #t$alpha # handle NA
+  #t$omega
 
-t1 = data.frame(loc = 1:nlocs,
-  pdb_md_nma_fluctuations = b3d_nma_fluct,
-  pdb_struc_torson_alpha = t$alpha,
-  pdb_struc_torson_omega = t$omega
-  )
-df = merge(df, t1, by = "loc", all.x = T)
-
-
-
+  t1 = data.frame(loc = 1:nlocs,
+    pdb_md_nma_fluctuations = b3d_nma_fluct,
+    pdb_struc_torson_alpha = t$alpha,
+    pdb_struc_torson_omega = t$omega
+    )
+  df = merge(df, t1, by = "loc", all.x = T)
+}
 
 
+
+
+ 
 # -------------------- Protein sequence natural language embedding
-command = paste0("bash /scripts/Seq2ProtLangRep.sh -i=",infasta, " -o=/tmp/natlang/prot5")
-system(command)
+if(1==2){
+  command = paste0("bash /scripts/Seq2ProtLangRep.sh -i=",infasta, " -o=/tmp/natlang/prot5")
+  system(command)
 
-# # append protein vector to each residue row
-# t_seq2protlangrep = as.numeric(unlist(read.csv("/tmp/natlang/prot5_protein.csv", header = F)))
-# for( c in 1:length(t_seq2protlangrep) ){
-#   df = cbind(df, rep(t_seq2protlangrep , nrow(df)) )
-# }
+  # # append protein vector to each residue row
+  # t_seq2protlangrep = as.numeric(unlist(read.csv("/tmp/natlang/prot5_protein.csv", header = F)))
+  # for( c in 1:length(t_seq2protlangrep) ){
+  #   df = cbind(df, rep(t_seq2protlangrep , nrow(df)) )
+  # }
 
-# append residue vector to each residue row
-t_seq2residuelangrep = read.csv("/tmp/natlang/prot5_residue.csv", header = F)
-colnames( t_seq2residuelangrep) = paste0("seq2residuelangrep_", 1:ncol(t_seq2residuelangrep))
-t_seq2residuelangrep = cbind( loc = 1:nrow(t_seq2residuelangrep),
-                          t_seq2residuelangrep)
-df = merge(df, t_seq2residuelangrep, by = "loc")
+  # append residue vector to each residue row
+  t_seq2residuelangrep = read.csv("/tmp/natlang/prot5_residue.csv", header = F)
+  colnames( t_seq2residuelangrep) = paste0("seq2residuelangrep_", 1:ncol(t_seq2residuelangrep))
+  t_seq2residuelangrep = cbind( loc = 1:nrow(t_seq2residuelangrep),
+                            t_seq2residuelangrep)
+  df = merge(df, t_seq2residuelangrep, by = "loc")
+}
+
 
 
 
 
 # ------------------------------------------------------------ output
 write.csv(df, out_file, row.names = F)
-
-
 
 
 
