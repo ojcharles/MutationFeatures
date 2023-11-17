@@ -5,10 +5,10 @@
 # -------------------- Setup
 ### runtime vars
 args = commandArgs(trailingOnly=TRUE)
-infasta = args[1] #"/query/HCMV_UL54.fasta"
-blast_db_name = args[2] # "uniref50.fasta"
-threads = args[3] # 32
-v_eval = args[4] # 1e-7 # psiblast e value
+infasta = as.character(args[1]) #"/query/HCMV_UL54.fasta"
+blast_db_name = as.character(args[2]) # "uniref50.fasta"
+threads = as.numeric(args[3]) # 32
+v_eval = as.character(args[4]) # 1e-7 # psiblast e value
 
 
 library(stringr)
@@ -111,11 +111,15 @@ for(r in 1:nrow(df)){
 
 # get the move ave along a vector, do this before merge by loc
 mav =  function(x, n = 5){
-  x = filter(x, rep(1 / n, n), sides = 2)
+  # only is sensible for odd mav values
+  if( n %% 2 == 0){stop("CONSERVATION: cannot run an even moving average")}
+  y = apply(embed(x, n), 1, mean)
   # fill NA start and end
-  x[ 1 : round(n / 2, 0) ] = x[ round(n / 2, 0) + 1 ]
-  x[ ( length(x) - round(n / 2, 0) + 1 ) : length(x) ] = x[ length(x) -  round(n / 2, 0) ]
-  return(x)
+  n_to_pad = floor(n / 2) # by taking the mav we lose the first and last n_to_pad values
+  pad_start = rep(y[1] , n_to_pad)
+  pad_end = rep(y[length(y)] , n_to_pad)
+  y = c(pad_start , y , pad_end)
+  return(y)
 }
 
 
@@ -130,8 +134,9 @@ conservation = data.frame(read.table(paste0(tdir,"/seq_evol_conservation.txt"),h
 colnames(conservation) = c("loc", "seq_evol_conservation")
 conservation$seq_evol_conservation = as.numeric(conservation$seq_evol_conservation)
 conservation[conservation$seq_evol_conservation < 0,2] = 0 # handle NA
+conservation[,1] = conservation[,1] + 1 # reindex to start at 1 not 0
 conservation$seq_evol_conservation_ma5 = mav(conservation[,2],5)
-conservation$seq_evol_conservation_ma10 = mav(conservation[,2],10)
+conservation$seq_evol_conservation_ma11 = mav(conservation[,2],11)
 df = merge(df, conservation, by = "loc", all.x = T)
 
 
@@ -170,19 +175,22 @@ colnames(seq_coevol) = c("loc", "locb", "coupling")
 # //todo, coupling to a p2rank loc?
 # //todo make image of loca-locb matrix?
 library(dplyr)
-seq_coevol2 = seq_coevol[,c(1,3)] %>% 
-            group_by(loc) %>%
-            summarise(seq_evol_max_residue_coupling = max(coupling))
-df = merge(df, seq_coevol2, by = "loc", all.x = T)
-seq_coevol2 = seq_coevol[,c(1,3)] %>% 
-            group_by(loc) %>%
-            summarise(seq_evol_coupling_mean = mean(coupling))
-df = merge(df, seq_coevol2, by = "loc", all.x = T)
-seq_coevol2 = seq_coevol[,c(1,3)] %>% 
-            arrange(desc(coupling)) %>%   
-            group_by(loc) %>% 
-            slice(1 : as.integer( max(locs) / 10))   %>%
-            summarise(seq_evol_top10th_coupling_mean = mean(coupling))
+seq_coevol2 = data.frame()
+for(i in 1:nlocs){
+  which_locs = c( which(seq_coevol$loc == i) , which(seq_coevol$locb == i) )
+  t_coevol = seq_coevol[which_locs,]
+  seq_evol_max_residue_coupling = max(t_coevol$coupling)
+  seq_evol_residue_coupling_mean = mean(t_coevol$coupling)
+  seq_evol_top10th_coupling_mean = t_coevol %>% 
+  slice(1 : as.integer( max(locs) / 10))   %>%
+  summarise(seq_evol_top10th_coupling_mean = mean(coupling))
+
+  seq_coevol2 = rbind(seq_coevol2, 
+    data.frame(loc = i,
+    seq_evol_max_residue_coupling,
+    seq_evol_residue_coupling_mean,
+    seq_evol_top10th_coupling_mean) )
+}
 df = merge(df, seq_coevol2, by = "loc", all.x = T)
 
 
@@ -398,7 +406,7 @@ if(1 == 2){
   command = paste0("/scripts/Seq2Disorder.sh -i=", infasta,
     " -o=/tmp/seq2disorder.csv")
   system(command)
-  struc$seq2disorder = read.csv("/tmp/seq2disorder.csv")
+  struc$seq2disorder = read.csv("/tmp/seq2disorder.csv", header = F)
   colnames(struc$seq2disorder) = c("seq_struc_disorder")
   struc$seq2disorder$loc = 1:nrow(struc$seq2disorder)
   df = merge(df, struc$seq2disorder, by = "loc", all.x = T)
@@ -592,6 +600,10 @@ if(use_pdb){
     pdb_struc_torson_alpha = t$alpha,
     pdb_struc_torson_omega = t$omega
     )
+  # first and last residues do not have certain angles, as theres no neighbour
+  t1$pdb_struc_torson_alpha[1] = 0
+  t1$pdb_struc_torson_alpha[(nlocs - 1):nlocs] = 0
+  t1$pdb_struc_torson_omega[nlocs] = 0
   df = merge(df, t1, by = "loc", all.x = T)
 }
 
