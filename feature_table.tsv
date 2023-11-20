@@ -19,6 +19,8 @@ seq	evolutionary	CRAN-bio3d	entropy()$H.10	seq_evol_SHentropy10		CRAN-bio3d	Y	Y
 seq	evolutionary	CRAN-bio3d	entropy()$H.10.norm	seq_evol_SHentropy10_norm		CRAN-bio3d	Y	Y
 seq	evolutionary	CRAN-bio3d	conserv(sub.matrix = "bio3d")	seq_evol_conservation_bio3d		CRAN-bio3d	Y	Y
 seq	evolutionary	CRAN-bio3d	conserv(sub.matrix = "blosum62")	seq_evol_conservation_blosum62		CRAN-bio3d	Y	Y
+seq evolutionary    HMMER   hmmbuild    seq_evol_HmmEmmProb_[A-Y]   HMM residue emmission probabilities     Y   Y
+seq evolutionary    HMMER   hmmscan seq_evol_pfam_domain    residue in the best match Pfam domain       Y   Y
 seq	physicochemical			seq_phys_bulkiness_wt		J. Theor. Biol. 21:170-201(1968).	Y	Y
 seq	physicochemical			seq_phys_recognition_factors_wt		Can. J. Chem. 60:2606-2610(1982).	Y	Y
 seq	physicochemical			seq_phys_buried_residues_wt		Nature 277:491-492(1979).	Y	Y

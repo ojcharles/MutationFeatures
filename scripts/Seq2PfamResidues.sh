@@ -27,6 +27,10 @@ case $i in
     output="${i#*=}"
     ;;
 
+    -t=*|--threads=*)
+    threads="${i#*=}"
+    ;;
+
     *)
             # unknown option
     ;;
@@ -36,7 +40,7 @@ done
 echo "--------------------------------------------------------------------"
 echo "usage examples:"
 echo " CURRENT.sh -s   # this installs all dependencies"
-echo " CURRENT.sh -i=my.fasta -o=output.csv   # this runs stuff"
+echo " CURRENT.sh -i=my.fasta -o=output.csv -t=4  # this runs stuff"
 echo "--------------------------------------------------------------------"
 #echo "should setup:  $setup"
 #echo "file to process: $input"
@@ -58,7 +62,7 @@ else
     # hmmsearch --tblout ${output} -E 1e-5 --cpu 4 ${db_hmm} ${input}
     # hmmsearch --domtblout ${output} -E 1e-5 --cpu 4 ${db_hmm} ${input}
     # hmmscan --tblout ${output} -E 1e-5 --cpu 4 ${db_hmm} ${input}
-    hmmscan --domtblout ${output} -E 1e-5 --cpu 4 ${db_hmm} ${input} > /dev/null
+    hmmscan --domtblout ${output} -E 1e-5 --cpu ${threads} ${db_hmm} ${input} > /dev/null
     else
         echo "no idea what to do... give me an i/o or setup"
         exit 1

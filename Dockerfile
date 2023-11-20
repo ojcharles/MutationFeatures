@@ -39,24 +39,21 @@ RUN apt install -y curl libcurl4-openssl-dev libeigen3-dev
 COPY ./scripts/ /scripts/
 COPY ./lib/ /mflibs/
 RUN Rscript /scripts/install_r_packages.R
-RUN /scripts/install_stuff.sh
+RUN bash /scripts/install_stuff.sh
 
 
-
-RUN bash /scripts/pdb2ProtLigSite.sh -s
-RUN bash /scripts/msa2coupling.sh -s
-#RUN bash /scripts/Seq2ProtLangRep.sh -s
-#RUN bash /scripts/Seq2Disorder.sh -s
-#RUN bash /scripts/Seq2SecStruc.sh -s
 
 RUN python3 -m pip install biopython numpy pandas pybiolib
 RUN apt install -y nano
 RUN apt install -y hmmer
 
-# dev
-COPY Seq2PfamResidues.sh /scripts
-RUN bash /scripts/Seq2PfamResidues.sh -s
 
+RUN bash /scripts/pdb2ProtLigSite.sh -s
+RUN bash /scripts/msa2coupling.sh -s
+RUN bash /scripts/Seq2PfamResidues.sh -s
+#RUN bash /scripts/Seq2ProtLangRep.sh -s
+#RUN bash /scripts/Seq2Disorder.sh -s
+#RUN bash /scripts/Seq2SecStruc.sh -s
 
 COPY mf.R /scripts
 
