@@ -56,23 +56,40 @@ temp_blast = paste0(tdir,"/psiblast.fa")
 temp_blast_msa = paste0(tdir,"/psiblast_msa.fa")
 
 # search for homology
-command = paste0("psiblast -num_threads ", threads ," -query ", infasta," -db db/", blast_db_name, " -num_iterations 2 -out_ascii_pssm ",
-                              pssm_file," -save_pssm_after_last_round  -out ",temp_blast," -outfmt '6 qseqid sseqid sseq qstart' -inclusion_ethresh ",v_eval ," -evalue ", v_eval," ;")
-system(command)
+prerun_msa_file = gsub( ".fasta", "_msa.fasta", infasta )
+prerun_pssm_file = gsub( ".fasta", "_pssm.txt", infasta )
+if( file.exists(prerun_msa_file) & file.exists(prerun_pssm_file) ){
+  file.copy(prerun_msa_file, temp_blast_msa)
+  file.copy(prerun_pssm_file, pssm_file)
+}else{
+  command = paste0("psiblast -num_threads ", threads ," -query ", infasta," -db db/", blast_db_name, " -num_iterations 2 -out_ascii_pssm ",
+                                pssm_file," -save_pssm_after_last_round  -out ",temp_blast," -outfmt '6 qseqid sseqid sseq qstart' -inclusion_ethresh ",v_eval ," -evalue ", v_eval," ;")
+  system(command)
 
-# convert blastoutput to fasta
-out_fasta = c("")
-t = read.table(temp_blast)
-for(i in 1:nrow(t)){
-  seq = paste0(paste0(rep("-", t$V4[i] - 1), collapse = ""), t$V3[i])
-  out_fasta = c(out_fasta, paste0(">", t$V2[i]))
-  out_fasta = c(out_fasta, seq)
+
+  # convert blastoutput to fasta
+  out_fasta = c("")
+  t = read.table(temp_blast)
+  for(i in 1:nrow(t)){
+    seq = paste0(paste0(rep("-", t$V4[i] - 1), collapse = ""), t$V3[i])
+    out_fasta = c(out_fasta, paste0(">", t$V2[i]))
+    out_fasta = c(out_fasta, seq)
+  }
+  writeLines(out_fasta, temp_blast)
+
+
+  # align outputted fasta
+  command = paste0("mafft --add  ", temp_blast," --keeplength --thread ",  threads ," ",infasta, " > ", temp_blast_msa," 2>",tdir,"/err.txt" )
+  system(command)
+
+  #store for later reruns
+  file.copy(temp_blast_msa, prerun_msa_file)
+  file.copy(pssm_file, prerun_pssm_file)
 }
-writeLines(out_fasta, temp_blast)
 
-# align outputted fasta
-command = paste0("mafft --add  ", temp_blast," --keeplength --thread ",  threads ," ",infasta, " > ", temp_blast_msa," 2>",tdir,"/err.txt" )
-system(command)
+
+
+
 
 # function to take pssm file -> pssm score matrix
 pssmfile2df = function(pssm_file){
@@ -330,7 +347,7 @@ df = merge(df,d_hmmer[,1:21], by.x = "loc", by.y = "seq_evol_HmmEmmProb_position
 
 
 # residues in Pfam domain - binary boolean
-command = paste0("/scripts/Seq2PfamResidues.sh -i=", infasta, " -o=/tmp/pfam_domains.out")
+command = paste0("/scripts/Seq2PfamResidues.sh -i=", infasta, " -o=/tmp/pfam_domains.out --threads=",as.character(threads))
 system(command)
 # read in key line from table
 text = readLines("/tmp/pfam_domains.out")
