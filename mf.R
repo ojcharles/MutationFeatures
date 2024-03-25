@@ -5,7 +5,7 @@
 # -------------------- Setup
 ### runtime vars
 args = commandArgs(trailingOnly=TRUE)
-infasta = as.character(args[1]) #"/query/HCMV_UL54.fasta"
+infasta = as.character(args[1]) #"/query/HCMV_UL97.fasta"
 blast_db_name = as.character(args[2]) # "uniref50.fasta"
 threads = as.numeric(args[3]) # 32
 v_eval = as.character(args[4]) # 1e-7 # psiblast e value
@@ -69,6 +69,10 @@ for(i in 1:nrow(t)){
   out_fasta = c(out_fasta, seq)
 }
 writeLines(out_fasta, temp_blast)
+
+# deduplicate fasta
+system( paste0("awk '/^>/{f=!d[$1];d[$1]=1}f' ", temp_blast, " > /tmp/temp.fa") )
+system( paste0("cp /tmp/temp.fa ", temp_blast) )
 
 # align outputted fasta
 command = paste0("mafft --add  ", temp_blast," --keeplength --thread ",  threads ," ",infasta, " > ", temp_blast_msa," 2>",tdir,"/err.txt" )
