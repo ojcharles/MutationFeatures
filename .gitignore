@@ -6,3 +6,4 @@ t/
 query/
 lib/
 test/
+help.sh

@@ -57,10 +57,6 @@ RUN bash /scripts/msa2coupling.sh -s
 #RUN bash /scripts/Seq2Disorder.sh -s
 #RUN bash /scripts/Seq2SecStruc.sh -s
 
-# dev
-COPY Seq2PfamResidues.sh /scripts
-RUN bash /scripts/Seq2PfamResidues.sh -s
-
 COPY mf.R /scripts
 
 RUN python3 -m pip install numpy pandas Bio
