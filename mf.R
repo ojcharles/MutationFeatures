@@ -403,7 +403,7 @@ df = cbind(df,physdat)
 
 
 # ------------------------------------------------------------ Structural features
-if(1 == 2){
+if(1 == 1){
   struc = list()
   # --------------------  from sequence
   ### disorder

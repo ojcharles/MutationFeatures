@@ -53,8 +53,8 @@ RUN cd /tools && \
 
 RUN bash /scripts/pdb2ProtLigSite.sh -s
 RUN bash /scripts/msa2coupling.sh -s
+RUN bash /scripts/Seq2Disorder.sh -s
 #RUN bash /scripts/Seq2ProtLangRep.sh -s
-#RUN bash /scripts/Seq2Disorder.sh -s
 #RUN bash /scripts/Seq2SecStruc.sh -s
 
 COPY mf.R /scripts
