@@ -56,7 +56,8 @@ if [ $setup = 1 ]; then
         echo "installing:    $program"
         python3 -m venv ~/envs/metapredict
         source ~/envs/metapredict/bin/activate
-        pip install metapredict
+        python3 -m pip install numpy pytorch scipy cython matplotlib 
+        python3 -m pip install metapredict
         deactivate
     fi
     exit 0
